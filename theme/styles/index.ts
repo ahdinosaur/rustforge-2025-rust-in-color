@@ -1,4 +1,4 @@
-import './layout.css'
-
-import '@catppuccin/palette'
+import '@catppuccin/palette/css/catppuccin.css'
 import './colors.css'
+
+import './layout.css'

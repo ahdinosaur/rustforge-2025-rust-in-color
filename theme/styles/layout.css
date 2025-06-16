@@ -1,7 +1,9 @@
 .slidev-layout {
   @apply px-14 py-10 text-[1.1rem];
+  color: var(--ctp-text);
+  background-color: var(--ctp-base);
 
-  h1, h2, h3, h4, p, div {
+  h1, h2, h3, h4, h5, h6, p, div {
     @apply select-none;
   }
 
@@ -11,6 +13,7 @@
 
   h1 {
     @apply text-4xl mb-4 font-700 -ml-[0.05em];
+    color: var(--ctp-mauve);
   }
   h1 + h2 {
     @apply -mt-4;
@@ -18,18 +21,31 @@
 
   h2 {
     @apply text-2xl font-700;
+    color: var(--ctp-teal);
   }
 
   h3 {
     @apply text-sm pt-2 uppercase tracking-widest font-500 -ml-[0.05em];
+    color: var(--ctp-maroon);
   }
 
   h3:not(.opacity-100) {
     @apply opacity-40;
   }
 
+  h4 {
+    color: var(--ctp-blue);
+  }
+  h5 {
+    color: var(--ctp-peach);
+  }
+  h6 {
+    color: var(--ctp-lavender);
+  }
+
   p {
     @apply my-4 leading-6;
+    color: var(--ctp-text);
   }
 
   h1 + p {
@@ -50,7 +66,10 @@
   }
 
   blockquote {
-    @apply text-sm px-2 py-1 bg-$prism-background border-$slidev-theme-primary border-l rounded;
+    @apply text-sm px-2 py-1 rounded;
+    background-color: var(--ctp-mantle);
+    border-left: 4px solid var(--ctp-sapphire);
+    color: var(--ctp-subtext1);
   }
 
   blockquote > * {
@@ -62,15 +81,22 @@
   }
 
   tr {
-    @apply border-b border-gray-400 border-opacity-20;
+    border-bottom: 1px solid var(--ctp-surface0);
   }
 
   th {
     @apply text-left font-400;
+    color: var(--ctp-text);
   }
 
   a {
-    @apply border-current border-b border-dashed hover:(text-$slidev-theme-primary border-solid);
+    @apply border-current border-b border-dashed;
+    color: var(--ctp-sapphire);
+  }
+
+  a:hover {
+    color: var(--ctp-blue);
+    @apply border-solid;
   }
 
   td, th {
@@ -79,11 +105,15 @@
 
   b, strong {
     @apply font-600;
+    color: var(--ctp-text);
   }
 
   kbd {
-    @apply border border-gray-400 border-b-2 border-opacity-20 rounded;
-    @apply bg-gray-400 bg-opacity-5 py-0.5 px-1 text-sm font-mono;
+    @apply rounded py-0.5 px-1 text-sm font-mono;
+    background-color: var(--ctp-surface0);
+    border: 1px solid var(--ctp-surface1);
+    border-bottom: 2px solid var(--ctp-surface1);
+    color: var(--ctp-text);
   }
 }
 
@@ -93,35 +123,46 @@
 
   h1 {
     @apply text-6xl font-700 leading-20;
+    color: var(--ctp-text);
   }
 
   h1 + p {
     @apply font-700 -mt-4 text-2xl;
+    color: var(--ctp-subtext1);
   }
 }
+
 .slidev-layout.fact {
   @apply text-center;
   h1 {
     @apply text-8xl font-700;
+    color: var(--ctp-sapphire);
   }
   h1 + p {
     @apply font-700 text-2xl;
+    color: var(--ctp-text);
   }
 }
+
 .slidev-layout.statement {
   @apply text-center;
 
   h1 {
     @apply text-6xl font-700;
+    color: var(--ctp-mauve);
   }
 }
+
 .slidev-layout.quote {
   h1 + p {
     @apply mt-6 ml-6;
+    color: var(--ctp-subtext1);
   }
 }
+
 .slidev-layout.section {
   h1 {
     @apply text-6xl font-500 leading-20;
+    color: var(--ctp-green);
   }
 }
