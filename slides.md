@@ -7,9 +7,15 @@ title: 'Rust in Color: Embedded LED Art'
 info: |
   ## Rust in Color: Embedded LED Art
 
-  Let's goooooooo.
+  Beautiful art with LEDs:
+
+  > Using _no-std_ _no-alloc_ **Rust** to color an LED cube with 3d-native animations
 
   <https://blinksy.dev>
+
+# https://sli.dev/custom/config-fonts
+fonts:
+  provider: coollabs
 
 # https://sli.dev/features/drawing
 drawings:
@@ -28,7 +34,9 @@ mdc: true
 
 # Rust In Color: Embedded LED Art
 
-What what what
+Beautiful art with LEDs:
+
+> Using _no-std_ _no-alloc_ **Rust** to color an LED cube with 3d-native animations
 
 <div class="abs-br m-6 text-xl">
   <a href="https://github.com/ahdinosaur/rustforge-2025-rust-in-color" target="_blank" class="slidev-icon-btn">
@@ -41,9 +49,8 @@ Slide notes?
 -->
 
 ---
----
 
-# Hi I'm Mikey
+## Hi I'm Mikey
 
 I like computers and stuff.
 
@@ -51,16 +58,24 @@ I like computers and stuff.
 -->
 
 ---
+
+## What in this talk?
+
+- Architecture Overview
+- Layouts
+  - Prior Art
+    - Tetrahedron
+    - Tensegrity
+    - Vegas Sphere
+- Patterns
+  - Prior Art: WLED
+- Drivers
+  - Prior Art: FastLED
+- How to start now
+
 ---
 
-# What is this about?
-
-<Toc text-sm minDepth="1" maxDepth="1" />
-
----
----
-
-# Let's test some code
+### Let's test some code
 
 ```rust
 layout2d!(
@@ -81,7 +96,7 @@ layout: center
 class: text-center
 ---
 
-# Learn More
+## Learn More
 
 <https://blinksy.dev>
 
