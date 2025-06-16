@@ -1,0 +1,23 @@
+{
+  "name": "slide",
+  "version": "0.25.1",
+  "private": true,
+  "slidev": {
+    "defaults": {
+      "fonts": {
+        "sans": "Helvetica Neue",
+        "local": "Helvetica Neue"
+      }
+    }
+  },
+  "dependencies": {
+    "@catppuccin/palette": "^1.7.1",
+    "@slidev/types": "^0.47.0"
+  },
+  "scripts": {
+    "dev": "slidev example.md --open",
+    "build": "slidev build example.md",
+    "export": "slidev export example.md",
+    "screenshot": "slidev export example.md --format png"
+  }
+}
