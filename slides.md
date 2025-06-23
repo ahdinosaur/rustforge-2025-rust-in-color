@@ -75,6 +75,42 @@ I like computers and stuff.
 
 ---
 
+OR
+
+- About me
+- Overview
+- Prior projects
+    - Tetrahedron using Rust
+    - Tensegrity using WLED
+- How do addressable LEDs work
+- Driver trait
+- Clocked (APA102 aka DotStar) LEDs
+- Clockless (WS2812 aka NeoPixel) LEDs
+- Create a rainbow
+- HSV color space
+- Make the rainbow scroll with time
+- So that's 1d, let's do 2d
+- How do pixels get laid out on a panel (note the zig zag)
+- Make a scrolling rainbow in 2d
+- 3d layouts
+- Prior art: Tetrahedron using Rust
+- Prior art: Tensegrity using WLED
+- Prior art: Vegas Sphere, map 2d onto 3d
+- 3d-native
+- Go back to 2d: map 2d as a space from -1.0 to 1.0
+    - We create shapes in that space
+    - We have a function that returns points for each pixel in that space
+- Map 3d as a space from -1.0 to 1.0
+    - We create shapes in that space
+    - We have a function that returns points for each pixel in that space
+- Layout3d Trait
+- Pattern Trait
+- Put it all together: Control
+- How to start now
+
+
+---
+
 ### Let's test some code
 
 ```rust
