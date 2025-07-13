@@ -108,6 +108,60 @@ OR
 - Put it all together: Control
 - How to start now
 
+---
+
+OR
+
+- About me
+- Prior projects
+    - Tetrahedron using Rust
+    - Tensegrity using WLED
+- Overview
+  - Layout: Where are the LEDs in space
+  - Pattern: How to color the space
+  - Driver: How to make an LED be a color
+  - (Future work: interactions)
+- Start with Driver: How to make an LED be a color
+- Initial Driver trait (`smart-led`)
+- Clocked (APA102 aka DotStar) LEDs
+- Clockless (WS2812 aka NeoPixel) LEDs
+- Create a rainbow
+- Challenges
+  - integers vs floats
+  - Brightness
+  - Color systems
+    - sRGB vs linear sRGB vs HSV vs OkHsv
+  - Color correction
+  - (Future work: Multi-LED systems)
+- New driver trait
+- New colors
+- New rainbow
+- Make the rainbow scroll with time
+- Rainbow as Pattern
+- So that's 1d, let's do 2d
+- How do pixels get laid out on a panel (note the zig zag)
+- Make a scrolling rainbow in 2d
+- Thinking in spaces rather than LEDs
+- Counter examples:
+    - Vegas Sphere, map 2d onto 3d
+- 2d: map 2d as a space from -1.0 to 1.0
+    - We create shapes in that space
+    - We have a function that returns points for each pixel in that space
+- Introducing Layout: Where are the LEDs in space
+- Layout structs
+   - Layout1d
+   - Layout2d
+- Introducing Pattern: How to color the space
+- Pattern trait
+- 1d examples
+- 2d examples
+- Now let's do 3d!
+- Map 3d as a space from -1.0 to 1.0
+- Layout3d Trait
+- Pattern Trait
+- 3d examples
+- Put it all together: Control
+- How to start now
 
 ---
 
