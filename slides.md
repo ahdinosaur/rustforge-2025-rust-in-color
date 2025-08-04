@@ -54,6 +54,124 @@ I'm a Rust developer based in New Zealand who cares about creative tech.
 
 ---
 
+## I made this LED cube
+
+I'm going to show you how
+
+---
+
+## Talk Outline
+
+- What are LEDs?
+- What is color?
+- How to animate patterns?
+- How to
+
+HMMMM... Or do we do...
+
+1. Color: How we perceive color
+2. Driver: How to make an LED be a color
+4. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+
+---
+
+## Let's start with LED basics
+
+---
+
+### What are LEDs
+
+LED = Light-emitting diode
+
+Black magic where a tiny surface emits light.
+
+---
+
+### What are RGB LEDs
+
+RGB = Red + Green + Blue
+
+3 LEDs next to each other.
+
+We use red, green, and blue because those most closely match our 3 photo-receptors in our eyes, more on that later.
+
+---
+
+### What are addressable LEDs?
+
+- You only talk to one LED, but after it's been given a color it passes on the next color to the next LED.
+- Like filling a bucket, that overflows to the next bucket.
+- So you must tell provide a color to every LED on every frame
+
+---
+
+### So how do we talk to these LEDs?
+
+There's two main types of addressable LEDs:
+
+- "Clocked": e.g. DotStar LEDs
+- "Clockless": e.g. NeoPixel LEDs
+
+---
+
+### Driver trait
+
+We'll start with a basic `Driver` trait, similar to `smart-leds-trait`:
+
+```rust
+pub struct Rgb {
+    red: u8,
+    green: u8,
+    blue: u8,
+}
+
+pub trait Driver {
+    type Error;
+    type Color;
+
+    fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+    where
+        I: IntoIterator<Item = Rgb>;
+}
+```
+
+---
+
+### How do we talk to "clocked" LEDs?
+
+---
+
+### Using Rust to talk to "clocked" LEDs
+
+---
+
+### How do we talk to "clockless" LEDs?
+
+---
+
+### Using Rust to talk to "clockless" LEDs
+
+---
+
+## Color
+
+So now we need to think about color.
+
+---
+
+## ???
+
+---
+
+## Let's zoom out and think about what we want to do
+
+---
+
+IGNORE BELOW HERE, IS OLD NEWS
+
+---
+
 ## Talk outline
 
 - About me

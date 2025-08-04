@@ -8,6 +8,7 @@
     "export": "slidev export"
   },
   "dependencies": {
+    "@catppuccin/palette": "^1.7.1",
     "@slidev/cli": "^51.8.2",
     "vue": "^3.5.16"
   }
