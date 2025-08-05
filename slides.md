@@ -48,35 +48,36 @@ Beautiful art with LEDs:
 
 ## Hi I’m Mikey
 
-I am Mikey, aka **@ahdinosaur**
+I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
 
-I'm a Rust developer based in New Zealand who cares about creative tech.
+I'm a Rust developer based in New Zealand who cares about creative tech and community.
 
 ---
 
 ## I made this LED cube
 
-I'm going to show you how
+I'm going to show you how, from first principles.
 
 ---
 
 ## Talk Outline
 
-- What are LEDs?
-- What is color?
-- How to animate patterns?
-- How to
-
-HMMMM... Or do we do...
-
-1. Color: How we perceive color
-2. Driver: How to make an LED be a color
-4. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
+- `1.` `Driver`: How to make an LED be a color
+  - `1.1.` `Color`: How our eyes perecive light
+- `2.` `Layout`: Where are the LEDs in space
+- `3.` `Pattern`: How to animate the space with color
+- `4.` `Control`: How to put these together
+- `5.` Quickstart: How to start an LED project now
 
 ---
 
-## Let's start with LED basics
+## 1. Driver
+
+How to make an LED be a color
+
+---
+
+### Let's start with LED basics
 
 ---
 
@@ -115,7 +116,7 @@ There's two main types of addressable LEDs:
 
 ---
 
-### Driver trait
+### Basic `Driver` trait
 
 We'll start with a basic `Driver` trait, similar to `smart-leds-trait`:
 
@@ -136,6 +137,12 @@ pub trait Driver {
 }
 ```
 
+<!--
+
+By using an iterator, we can avoid alloc.
+
+-->
+
 ---
 
 ### How do we talk to "clocked" LEDs?
@@ -154,17 +161,141 @@ pub trait Driver {
 
 ---
 
-## Color
+### Using a trait to represent "clockless" timings
 
-So now we need to think about color.
+Since we want to support all possible "clockless" LED chipsets, we can represent the timings for a particular chipset as a trait.
 
----
-
-## ???
+Then, we can implement a driver using the timing trait as an argument (a generic type).
 
 ---
 
-## Let's zoom out and think about what we want to do
+### The problem with naive RGB
+
+---
+
+## 1.1. Color
+
+How our eyes perceive light
+
+---
+
+TODO
+
+---
+
+### Color challenges
+
+
+- Challenges
+  - integers vs floats
+  - Brightness
+  - Color systems
+    - sRGB vs linear sRGB vs HSV vs OkHsv
+  - Color correction
+  - (Future work: Multi-LED systems)
+
+---
+
+### A better `Driver` trait
+
+Now we want to improve how our `Driver` handles colors, with respect to human perception.
+
+---
+
+## 2. Layout
+
+Where are the LEDs in space
+
+---
+
+### Backstory: Tetrahedron using Rust
+
+---
+
+### Backstory: Tensegrity using WLED
+
+---
+
+### `Layout1d`
+
+---
+
+### Using `Layout1d`
+
+---
+
+### `Layout2d`
+
+---
+
+### `Shape2d`
+
+---
+
+### Learning: How to returning an iterator with no-alloc
+
+---
+
+### `Point2d`
+
+---
+
+### `Line2d`
+
+---
+
+### `Grid2d`
+
+Notice the zig zag
+
+---
+
+### Using `Layout2d`
+
+---
+
+### `Layout3d`
+
+---
+
+### `Shape3d`
+
+Like `Shape2d`
+
+---
+
+### Using `Layout3d`
+
+---
+
+## 3. Pattern
+
+How to animate the space with color
+
+---
+
+### ???
+
+---
+
+
+## 4. `Control`
+
+How to put these together
+
+---
+
+### ???
+
+---
+
+## 5. Quickstart
+
+How to start an LED project now
+
+---
+
+### ???
 
 ---
 
