@@ -9,7 +9,7 @@ info: |
 
   Beautiful art with LEDs:
 
-  > Using _no-std_ _no-alloc_ **Rust** to color an LED cube with 3d-native animations
+  > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
   <https://blinksy.dev>
 
@@ -36,7 +36,7 @@ mdc: true
 
 Beautiful art with LEDs:
 
-> Using _no-std_ _no-alloc_ **Rust** to color an LED cube with 3d-native animations
+> Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
 <div class="abs-br m-6 text-xl">
   <a href="https://github.com/ahdinosaur/rustforge-2025-rust-in-color" target="_blank" class="slidev-icon-btn">
@@ -60,6 +60,47 @@ I'm going to show you how, from first principles.
 
 ---
 
+### Backstory: Why I care about LEDs
+
+LEDs tickle my brain in a great way.
+
+---
+
+### Prior art: LED suspenders using FastLED
+
+<video controls autoplay loop muted class="w-full h-full">
+  <source src="/media/led-suspenders.mp4#t=15" type="video/mp4">
+</video>
+
+---
+
+### Prior art: Tetrahedron using Rust
+
+
+<video controls autoplay loop muted class="w-full h-full">
+  <source src="/media/led-tetrahedron.mp4" type="video/mp4">
+</video>
+
+---
+
+### Prior art: Tensegrity using WLED
+
+<video controls autoplay loop muted class="w-full h-full">
+  <source src="/media/led-tensegrity.mp4" type="video/mp4">
+</video>
+
+---
+
+### LEDs + Rust = <3
+
+<!--
+
+Obviously we're all here for Rust conf, so here's how I made LEDs happen in Rust.
+
+-->
+
+---
+
 ## Talk Outline
 
 - `1.` `Driver`: How to make an LED be a color
@@ -68,6 +109,12 @@ I'm going to show you how, from first principles.
 - `3.` `Pattern`: How to animate the space with color
 - `4.` `Control`: How to put these together
 - `5.` Quickstart: How to start an LED project now
+
+<!--
+
+Let's start with the smallest building block, the LED, and build up from there.
+
+-->
 
 ---
 
@@ -158,6 +205,10 @@ By using an iterator, we can avoid alloc.
 ---
 
 ### Impl "clocked" LEDs with delay
+
+TODO code
+
+TODO svg animation showing what the LED would be doing
 
 ---
 
@@ -254,6 +305,8 @@ Changes?
 ---
 
 ### But what about async?
+
+It's the same, but using async.
 
 ---
 
@@ -446,6 +499,10 @@ How to start an LED project now
 
 ---
 
+### Blinksy
+
+---
+
 ### Desktop
 
 > Blinksy also has a way to simulate on your desktop: `blinksy-desktop`.
@@ -480,3 +537,9 @@ Blinksy: <https://blinksy.dev>
 Me: <https://mikey.nz>
 
 <PoweredBySlidev mt-10 />
+
+---
+
+## Play with me
+
+Find me, maybe in the other room, I have LEDs and microcontrollers you can play with.
