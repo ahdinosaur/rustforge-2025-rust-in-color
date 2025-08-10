@@ -50,7 +50,9 @@ Beautiful art with LEDs:
 
 I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
 
-I'm a Rust developer based in New Zealand who cares about creative tech and community.
+- Node.js + Rust developer
+- Based in Aotearoa New Zealand
+- Cares about creative tech and community.
 
 ---
 
@@ -81,6 +83,16 @@ LEDs tickle my brain in a great way.
   <source src="/media/led-tetrahedron.mp4" type="video/mp4">
 </video>
 
+<!--
+
+This was early days for me and Rust.
+
+In this project I came to my realization: each LED pixel should have a position in 3d space.
+
+We use this position in 3d space to compute the color for each animation frame.
+
+-->
+
 ---
 
 ### Prior art: Tensegrity using WLED
@@ -89,13 +101,21 @@ LEDs tickle my brain in a great way.
   <source src="/media/led-tensegrity.mp4" type="video/mp4">
 </video>
 
+<!--
+
+WLED is off-the-shelf software for LED projects.
+
+There's no concept of 3d position, each strut is a 1d segment with an array of pixels.
+
+-->
+
 ---
 
 ### LEDs + Rust = <3
 
 <!--
 
-Obviously we're all here for Rust conf, so here's how I made LEDs happen in Rust.
+Obviously we're all here for Rust conf, so here's how to use LEDs plus Rust to make magic.
 
 -->
 
@@ -165,8 +185,6 @@ There's two main types of addressable LEDs:
 
 ### Basic `Driver` trait
 
-We'll start with a basic `Driver` trait, similar to `smart-leds-trait`:
-
 ```rust
 pub struct Rgb {
     red: u8,
@@ -186,25 +204,42 @@ pub trait Driver {
 
 <!--
 
-By using an iterator, we can avoid alloc.
+We'll start with a basic `Driver` trait, similar to `smart-leds` crate.
+
+We use an iterator to avoid heap allocations and minimize the memory usage.
 
 -->
 
 ---
 
-### How do we talk to "clocked" LEDs?
+### Clocked LEDs
 
-> A clocked protocol is based on SPI, where chipsets have a data line and a clock line.
-> For every bit we want to send from the controller to the LEDs:
->
-> - First the controller sets the data line (MOSI) to HIGH for a 1 or LOW for a 0.
-> - Then the controller “ticks” the clock line (SCLK), by going from LOW to HIGH.
-> - On the rising edge of the clock line, the LED will read the data line.
-> - Halfway through the clock cycle, the controller will reset the clock line to LOW.
+- Two wires: data + clock
+- Each bit: set data, tick clock, repeat
+
+TODO diagram
+
+<!--
+
+A clocked protocol is based on SPI, where chipsets have a data line and a clock line.
+
+For every bit we want to send from the controller to the LEDs:
+
+- First the controller sets the data line (MOSI) to HIGH for a 1 or LOW for a 0.
+- Then the controller “ticks” the clock line (SCLK), by going from LOW to HIGH.
+- On the rising edge of the clock line, the LED will read the data line.
+- Halfway through the clock cycle, the controller will reset the clock line to LOW.
+
+Why it’s friendly:
+
+- Timing handled by the clock
+- Easy to drive via SPI
+
+-->
 
 ---
 
-### Impl "clocked" LEDs with delay
+### Impl Clocked with delay
 
 TODO code
 
@@ -218,18 +253,23 @@ SPI
 
 ---
 
-### How do we talk to "clockless" LEDs?
+### Clockless LEDs?
 
-> A clockless protocol is based on specific timing periods, where chipsets have only a single data line.
-> For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH for 0.4 µs, then LOW for 0.85 µs. These timings must be accurate to within 150 ns. That's tiny!
+- One wire, no clock
+- Bits are pulse widths (tight timing)
 
----
+Example timing (WS2812B):
 
-### Impl "clockless" LEDs with delay
+- 0-bit: HIGH ~0.4µs, then LOW ~0.85µs
+- 1-bit: HIGH ~0.8µs, then LOW ~0.45µs
 
----
+<!--
 
-### Impl "clockless" LEDs with RMT
+A clockless protocol is based on specific timing periods, where chipsets have only a single data line.
+
+For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH for 0.4 µs, then LOW for 0.85 µs. These timings must be accurate to within 150 ns. That's tiny!
+
+-->
 
 ---
 
@@ -241,6 +281,14 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 ---
 
+### Impl Clockless with delay
+
+---
+
+### Impl Clockless with RMT
+
+---
+
 ### The problem with naive RGB
 
 ---
@@ -249,25 +297,112 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 How our eyes perceive light
 
+<!--
+
+Versus what LEDs emit.
+
+-->
+
+---
+
+### Pulse-width modulation
+
+![LED PWM (Pulse-Width Modulation)](/media/led-pwm.svg)
+
+<!--
+
+Each LED is controlled via pulse-width modulation (PWM).
+
+- If you tell an LED to be 100% bright, it will be on for 100% of the time (a 100% duty cycle).
+- If you tell an LED to be 50% bright, it will be on for 50% of the time (a 50% duty cycle).
+
+And so on. Our eyes don’t notice the flicker on and off.
+
+-->
+
+---
+
+### Perception vs physics
+
+Perceived brightness ≠ emitted photons
+
+<!--
+
+For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
+
+-->
+
+---
+
+### Gamma correction
+
+What we perceive to a linear change in photons is not linear.
+
+![Gamma correction](/media/gamma-correction.svg)
+
+<!--
+
+This mismatch between physics and perception is why the “RGB” you think you know is actually gamma-encoded sRGB. sRGB allows us to think in terms of perception, where double the red value means double the perceived brightness of red. Then for LEDs, we convert the gamma-encoded sRGB to linear, to use as a gamma-corrected duty cycle.
+
+By the way, if you start mixing RGB's, make sure to do so in the linear space.
+
+-->
+
+---
+
+TODO below
+
+---
+
+### Brightness and gamma
+
+<!--
+
+- Apply gamma correction and a single global brightness
+- Keep per-pixel math simple in your pattern
+
+Tip:
+- Use Hsv/Okhsv/Okhsl in patterns for intuitive control
+
+-->
+
 ---
 
 TODO
 
+### Color systems
+
+- sRGB vs linear sRGB vs HSV vs OkHsv
+
 ---
 
-### Color challenges
+### Srgb
 
+---
 
-- Challenges
-  - integers vs floats
-  - Brightness
-  - Color systems
-    - sRGB vs linear sRGB vs HSV vs OkHsv
-  - Color correction
-  - (Future work: Multi-LED systems)
+### LinearSrgb
 
-> Therefore, we use `LinearSrgb` when thinking about LEDs, since linear color values correspond to the luminous intensity of light, i.e. how many photons should be emitted.
-> … This mismatch between physics and perception is why the “RGB” you think you know is actually gamma-encoded sRGB. … By the way, if you start mixing RGB's, make sure to do so in the linear space.
+LinearSrgb is what we convert into to drive our LEDs
+
+---
+
+### Hsv
+
+---
+
+### Okhsv
+
+---
+
+### FromColor
+
+---
+
+### Color correction
+
+---
+
+### Future work: Multi-LED systems
 
 ---
 
@@ -344,9 +479,30 @@ Where are the LEDs in space
 
 ---
 
-## Counter-example: Vegas Sphere
+
+### Why 3D-native matters (cube)
+
+- 2D face-mapping to a cube introduces seams
+- 3D-native: every pixel has a 3D position
+- Patterns are like shaders in space
+
+Result:
+- Volumetric motion feels coherent
+- Faces don’t repeat identical looks
+
+---
+
+### Counter-example: DIY Vegas sphere
+
+- Wrapping a matrix around a sphere bunches pixels at poles
+- That’s only a problem if you must map a 2D raster
+- 3D-native patterns avoid uneven sampling artifacts
+
+<!--
 
 > Even in the best mappings, these are still 2D screens wrapped around a 3D surface, which means limitations.
+
+-->
 
 ---
 
@@ -354,9 +510,14 @@ Where are the LEDs in space
 
 Map 1d space -1.0 → 1.0
 
+- LED 0 at \( -1.0 \), last LED at \( 1.0 \)
+- Center is \( 0.0 \)
+
 <!--
 
 Why -1.0 → 1.0? So 0.0 is the middle.
+
+This will be consistent across dimensional spaces.
 
 -->
 
@@ -447,6 +608,50 @@ A pattern, most similar to a WLED effect, generates colors for each LED based on
 
 ### `Pattern` trait
 
+```rust
+pub trait Pattern<Dim, Layout>
+where
+  Layout: LayoutForDim<Dim>,
+{
+  type Params;
+  type Color;
+
+  fn new(params: Self::Params) -> Self;
+
+  fn tick(&self, time_in_ms: u64) -> impl Iterator<Item = Self::Color>;
+}
+```
+
+<!--
+
+- Works for 1D, 2D, and 3D
+- Iterator output stays no-alloc
+
+-->
+
+---
+
+### `Dim`?
+
+TODO
+
+(Do we even have time to talk about this?)
+
+We need a marker trait because otherwise there'd have to be separate traits for each Pattern dimension.
+
+You can't implement the same trait with different generic types
+
+You can't
+
+```rust
+impl<Layout: Layout1d> Pattern<Layout> {
+    // ...
+}
+
+impl<Layout: Layout2d> Pattern<Layout> {
+    // ...
+}
+```
 
 ---
 
@@ -526,6 +731,12 @@ How to start an LED project now
 
 ---
 
+## Come play with me
+
+Find me later, I have LEDs and microcontrollers you can play with.
+
+---
+
 layout: center
 class: text-center
 ---
@@ -539,7 +750,3 @@ Me: <https://mikey.nz>
 <PoweredBySlidev mt-10 />
 
 ---
-
-## Play with me
-
-Find me, maybe in the other room, I have LEDs and microcontrollers you can play with.
