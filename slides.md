@@ -32,6 +32,14 @@ mdc: true
 #  ogImage: https://cover.sli.dev
 ---
 
+TODO thoughts:
+
+- focus on cube
+  - should i drop clocked LEDs?
+  - should i drop Layout1d and Layout2d?
+
+---
+
 # Rust In Color: Embedded LED Art
 
 Beautiful art with LEDs:
