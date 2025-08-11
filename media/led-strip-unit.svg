@@ -1,0 +1,142 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="20.2010998473mm"
+  height="9.0231635788mm"
+  viewBox="0 0 20.2010998473 9.0231635788"
+>
+  <defs>
+    <style>
+      .board {
+        fill: #131313;
+      }
+      .window {
+        fill: #ffffff;
+      }
+      .pad {
+        fill: #b3b1b0;
+      }
+      .slot {
+        fill: #5d5650;
+      }
+      .led {
+        fill: #b9b9cb;
+      }
+      .contact {
+        fill: #ffb888;
+      }
+      .label {
+        fill: #ffffff;
+        font: 14px sans-serif;
+      }
+      .arrow {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 0.75;
+        marker-end: url(#arrowhead);
+      }
+    </style>
+
+    <marker
+      id="arrowhead"
+      orient="auto"
+      refX="0"
+      refY="0"
+      style="overflow: visible"
+    >
+      <path
+        d="M 0,0 5,-5 -12.5,0 5,5 Z"
+        transform="matrix(-0.8,0,0,-0.8,-10,0)"
+        fill="#ffffff"
+        stroke="#ffffff"
+        stroke-width="1pt"
+      />
+    </marker>
+  </defs>
+
+  <g
+    transform="matrix(0.09422204,0,0,0.09422204,-185.484952034,16.2302900512)"
+  >
+    <!-- Base board -->
+    <rect
+      class="board"
+      x="1968.5941"
+      y="-172.25577"
+      width="214.39888"
+      height="95.764893"
+    />
+
+    <!-- LED window and pads -->
+    <rect
+      class="window"
+      x="2022.4106"
+      y="-152.99663"
+      width="60.677338"
+      height="57.713684"
+    />
+    <rect class="pad" x="2027.851" y="-95.745728" width="13.427287" height="8.0261278" />
+    <rect class="pad" x="2065.7261" y="-95.464478" width="13.427287" height="8.0261278" />
+    <rect class="pad" x="2026.9136" y="-160.90204" width="13.427287" height="8.0261278" />
+    <rect class="pad" x="2064.9761" y="-161.27705" width="13.427287" height="8.0261278" />
+
+    <!-- Right connector block -->
+    <rect class="pad" x="2100.29" y="-144.32239" width="20.58675" height="10.942946" />
+    <rect class="pad" x="2100.688" y="-114.49127" width="20.58675" height="10.942946" />
+    <rect class="slot" x="2100.209" y="-133.29791" width="20.58675" height="18.817955" />
+
+    <!-- LED lens -->
+    <ellipse
+      class="led"
+      cx="2052.9099"
+      cy="-124.92973"
+      rx="19.091904"
+      ry="20.152565"
+    />
+
+    <!-- Left labels -->
+    <text class="label" x="1983.1047" y="-144">GND</text>
+    <text class="label" x="1983.2882" y="-114.5">DI</text>
+    <text class="label" x="1983.3204" y="-88.5">5V</text>
+
+    <!-- Left contact indicators -->
+    <path
+      class="contact"
+      transform="scale(-1)"
+      d="m -1968.552,158.69037 a 10.80938,8.8623381 0 0 1 -9.4072,-4.40197 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.44203 l -0.01,8.86233 z"
+    />
+    <path
+      class="contact"
+      transform="scale(-1)"
+      d="m -1968.4745,128.69034 a 10.80938,8.8623381 0 0 1 -9.4072,-4.40197 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.44203 l -0.01,8.86233 z"
+    />
+    <path
+      class="contact"
+      transform="scale(-1)"
+      d="m -1968.4745,102.44031 a 10.80938,8.8623381 0 0 1 -9.4072,-4.401968 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.442036 l -0.01,8.862334 z"
+    />
+
+    <!-- Right labels -->
+    <text class="label" x="2136.605" y="-144">GND</text>
+    <text class="label" x="2146.3345" y="-114.5">DO</text>
+    <text class="label" x="2149.5488" y="-88.5">5V</text>
+
+    <!-- Right contact indicators -->
+    <path
+      class="contact"
+      transform="scale(1,-1)"
+      d="m 2182.9152,158.69037 a 10.80938,8.8623381 0 0 1 -9.4072,-4.40197 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.44203 l -0.01,8.86233 z"
+    />
+    <path
+      class="contact"
+      transform="scale(1,-1)"
+      d="m 2182.9926,128.69034 a 10.80938,8.8623381 0 0 1 -9.4072,-4.40197 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.44203 l -0.01,8.86233 z"
+    />
+    <path
+      class="contact"
+      transform="scale(1,-1)"
+      d="m 2182.9926,102.44031 a 10.80938,8.8623381 0 0 1 -9.4072,-4.401968 10.80938,8.8623381 0 0 1 -0.028,-8.8805 10.80938,8.8623381 0 0 1 9.3792,-4.442036 l -0.01,8.862334 z"
+    />
+
+    <!-- Direction arrow -->
+    <path class="arrow" d="m 1988.2521,-163.07649 21.9375,-0.0937" />
+  </g>
+</svg>

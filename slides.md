@@ -52,7 +52,7 @@ I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
 
 - Node.js + Rust developer
 - Based in Aotearoa New Zealand
-- Cares about creative tech and community.
+- Cares about creative tech and community
 
 ---
 
@@ -64,7 +64,7 @@ I'm going to show you how, from first principles.
 
 ### Backstory: Why I care about LEDs
 
-LEDs tickle my brain in a great way.
+Shrug, LEDs tickle my brain in a great way.
 
 ---
 
@@ -77,7 +77,6 @@ LEDs tickle my brain in a great way.
 ---
 
 ### Prior art: Tetrahedron using Rust
-
 
 <video controls autoplay loop muted class="w-full h-full">
   <source src="/media/led-tetrahedron.mp4" type="video/mp4">
@@ -104,8 +103,6 @@ We use this position in 3d space to compute the color for each animation frame.
 <!--
 
 WLED is off-the-shelf software for LED projects.
-
-There's no concept of 3d position, each strut is a 1d segment with an array of pixels.
 
 -->
 
@@ -148,11 +145,15 @@ How to make an LED be a color
 
 ---
 
-### What are LEDs
+### What are RGB LEDs
 
 LED = Light-emitting diode
 
+<!--
+
 Black magic where a tiny surface emits light.
+
+-->
 
 ---
 
@@ -160,9 +161,17 @@ Black magic where a tiny surface emits light.
 
 RGB = Red + Green + Blue
 
+TODO image like https://circuitcamp.wordpress.com/2018/10/11/adafruit-neopixel-ws2812-led-complete-beginners-guide/
+
+or https://www.youtube.com/watch?v=lIePNCM7ldc
+
+<!--
+
 3 LEDs next to each other.
 
 We use red, green, and blue because those most closely match our 3 photo-receptors in our eyes, more on that later.
+
+-->
 
 ---
 
@@ -171,6 +180,13 @@ We use red, green, and blue because those most closely match our 3 photo-recepto
 - You only talk to one LED, but after it's been given a color it passes on the next color to the next LED.
 - Like filling a bucket, that overflows to the next bucket.
 - So you must tell provide a color to every LED on every frame
+
+<div style="display: flex; flex-direction: row; justify-content: center; align-items: center; height: 20%;">
+  <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
+  <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
+  <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
+  <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
+</div>
 
 ---
 
@@ -194,7 +210,6 @@ pub struct Rgb {
 
 pub trait Driver {
     type Error;
-    type Color;
 
     fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
     where
@@ -217,7 +232,7 @@ We use an iterator to avoid heap allocations and minimize the memory usage.
 - Two wires: data + clock
 - Each bit: set data, tick clock, repeat
 
-TODO diagram
+<img src="/media/clocked-transmission.svg" />
 
 <!--
 
@@ -239,29 +254,82 @@ Why it’s friendly:
 
 ---
 
-### Impl Clocked with delay
+### APA102 LEDs
 
-TODO code
-
-TODO svg animation showing what the LED would be doing
-
----
-
-### Impl "clocked" LEDs with SPI
-
-SPI
+<div style="height: 100%; display: flex; justify-content: center; align-items: center;">
+  <img alt="APA102 data format" src="/media/apa102-format.png" style="height: 100%;" />
+</div>
 
 ---
 
-### Clockless LEDs?
+### Impl Apa102 Driver with SPI (Part 1)
+
+```rust
+#[derive(Debug)]
+struct Apa102Driver<Spi>
+where
+    Spi: SpiBus<u8>,
+{
+    writer: Spi,
+}
+
+impl<Spi> Driver for Apa102Driver<Spi>
+where
+    Spi: SpiBus<u8>,
+{
+    type Error = Spi::Error;
+
+    fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+    where
+        I: IntoIterator<Item = Rgb>
+    {
+        // ...
+    }
+}
+```
+
+---
+
+### Impl Apa102 Driver with SPI (Part 2)
+
+```rust
+fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
+where
+    I: IntoIterator<Item = Rgb>
+{
+    // Start frame
+    writer.write(&[0x00, 0x00, 0x00, 0x00])
+
+    let mut num_pixels = 0;
+    for rgb in pixels.into_iter().inspect(|_| num_pixels += 1) {
+        // LED frame
+        let brightness = 16; // 0 - 31
+        writer.write(&[0b11100000 | (brightness & 0b00011111)])?;
+
+        let led_frame: [u8; 3] = [rgb.blue, rgb.green, rgb.red];
+        writer.write(&led_frame)?;
+    }
+
+    // End frame(s)
+    let num_end_bytes = (num_pixels - 1).div_ceil(16);
+    for _ in 0..num_end_bytes {
+        writer.write(&[0x00])?
+    }
+
+    Ok(())
+}
+```
+
+---
+
+### Clockless LEDs
 
 - One wire, no clock
-- Bits are pulse widths (tight timing)
+- Bits are based on specific timings
 
-Example timing (WS2812B):
-
-- 0-bit: HIGH ~0.4µs, then LOW ~0.85µs
-- 1-bit: HIGH ~0.8µs, then LOW ~0.45µs
+<div style="height: 70%; display: flex; justify-content: center; align-items: center;">
+  <img alt="Clockless timing" src="/media/clockless-timing.svg" style="height: 100%;" />
+</div>
 
 <!--
 
@@ -269,7 +337,25 @@ A clockless protocol is based on specific timing periods, where chipsets have on
 
 For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH for 0.4 µs, then LOW for 0.85 µs. These timings must be accurate to within 150 ns. That's tiny!
 
+Example timing (WS2812B):
+
+- 0-bit: HIGH ~0.4µs, then LOW ~0.85µs
+- 1-bit: HIGH ~0.8µs, then LOW ~0.45µs
+
 -->
+
+---
+
+### Clockless LEDs (Part 2)
+
+- One wire, no clock
+- Bits are based on specific timings
+
+
+<div style="height: 70%; display: flex; justify-content: center; align-items: center;">
+  <img alt="Clockless transmission" src="/media/clockless-transmission.svg" style="height: 100%;" />
+</div>
+
 
 ---
 
@@ -278,6 +364,28 @@ For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH f
 Since we want to support all possible "clockless" LED chipsets, we can represent the timings for a particular chipset as a trait.
 
 Then, we can implement a driver using the timing trait as an argument (a generic type).
+
+```rust
+pub trait ClocklessLed {
+    /// Duration of high signal for transmitting a '0' bit.
+    const T_0H: Nanoseconds;
+
+    /// Duration of low signal for transmitting a '0' bit.
+    const T_0L: Nanoseconds;
+
+    /// Duration of high signal for transmitting a '1' bit.
+    const T_1H: Nanoseconds;
+
+    /// Duration of low signal for transmitting a '1' bit.
+    const T_1L: Nanoseconds;
+
+    /// Duration of the reset period at the end of a transmission.
+    ///
+    /// This low signal period marks the end of a data frame and allows the LEDs
+    /// to latch the received data and update their output.
+    const T_RESET: Nanoseconds;
+}
+```
 
 ---
 
@@ -436,12 +544,41 @@ Changes?
 - correction: ColorCorrection
 -->
 
+---
+
+### Traits all the way down
+
+<!--
+
+To minimize duplication, we can abstract each LED into traits that describe:
+
+- For clocked LED's, the data format
+- For clockless LED's, the timing format
+- For all LED's, the order of pixel channel data
+
+And so on, but I don't have enough time to go deeper into this.
+
+-->
 
 ---
 
-### But what about async?
+### Apa102 Trait
 
-It's the same, but using async.
+---
+
+### Ws2812 Trait
+
+---
+
+### Okay, but what about async?
+
+It's basically the same, but using async.
+
+<!--
+
+You use async peripherals, like async SPI, async pin, and so on.
+
+-->
 
 ---
 
@@ -459,52 +596,77 @@ Where are the LEDs in space
 
 ### Thinking in spaces rather than LEDs
 
-> We aren't mapping 2D pixels onto a 3D surface, we're directly calculating the animation for each pixel in 3D space.
-> What if we animated the pixels using a 3D-native approach?
+A common approach is to think in terms of arrays of pixels.
+
+But what if instead, every pixel had a position in space?
+
+---
+
+### Animating in 3d spaces
+
+A common approach is to map a 2D projection onto a 3D surface.
+
+What if we animated the pixels natively in 3D?
+
+<!--
+
+Think like graphics shaders.
+
+-->
 
 ---
 
 ### Backstory: Tetrahedron using Rust
 
-> To understand what I mean about 3D layouts, look back at my LED tetrahedron:
-> Each pixel has a position in 3D space. Unlike most 2D or 3D projection mappings, which take a 2D raster (pixels from an image or video) and project onto a 2D or 3D surface, the LED tetrahedron is more like a graphics shader, where for each pixel (which has a 3D position), and given the current time, you calculate the color. So we aren't mapping 2D pixels onto a 3D surface, we're directly calculating the animation for each pixel in 3D space.
+<video controls autoplay loop muted class="w-full h-full">
+  <source src="/media/led-tetrahedron.mp4" type="video/mp4">
+</video>
+
+<!--
+
+To understand what I mean about 3D layouts, look back at my LED tetrahedron:
+
+Each pixel has a position in 3D space. Unlike most 2D or 3D projection mappings, which take a 2D raster (pixels from an image or video) and project onto a 2D or 3D surface, the LED tetrahedron is more like a graphics shader, where for each pixel (which has a 3D position), and given the current time, you calculate the color. So we aren't mapping 2D pixels onto a 3D surface, we're directly calculating the animation for each pixel in 3D space.
+
+-->
 
 
 ---
 
 ### Backstory: Tensegrity using WLED
 
-> In this case, I used WLED, which at the time only supported multiple 1D segments of 1D strips, now supports 2D grids. I made a 1D segment for every strut of the tensegrity.
-> While this still looks good, it's missing the same spatial feel, each strut more or less looks the same.
+<video controls autoplay loop muted class="w-full h-full">
+  <source src="/media/led-tensegrity.mp4" type="video/mp4">
+</video>
 
----
+<!--
 
+Since I used WLED, there's no concept of 3d position, each strut is a 1d segment with an array of pixels.
 
-### Why 3D-native matters (cube)
+While this still looks good, it's missing the same spatial feel, each strut more or less looks the same.
 
-- 2D face-mapping to a cube introduces seams
-- 3D-native: every pixel has a 3D position
-- Patterns are like shaders in space
-
-Result:
-- Volumetric motion feels coherent
-- Faces don’t repeat identical looks
+-->
 
 ---
 
 ### Counter-example: DIY Vegas sphere
 
+<!--
+
 - Wrapping a matrix around a sphere bunches pixels at poles
 - That’s only a problem if you must map a 2D raster
 - 3D-native patterns avoid uneven sampling artifacts
 
-<!--
-
-> Even in the best mappings, these are still 2D screens wrapped around a 3D surface, which means limitations.
+Even in the best mappings, these are still 2D screens wrapped around a 3D surface, which means limitations.
 
 -->
 
 ---
+
+### Counter-example: Cubes with WLED
+
+---
+
 
 ### `Layout1d`
 
