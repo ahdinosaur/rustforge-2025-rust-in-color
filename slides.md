@@ -30,13 +30,12 @@ mdc: true
 # open graph
 # seoMeta:
 #  ogImage: https://cover.sli.dev
+
 ---
 
-TODO thoughts:
+TODO
 
-- focus on cube
-  - should i drop clocked LEDs?
-  - should i drop Layout1d and Layout2d?
+On the "start" and "end" slides of each section, show the whole outline, with an arrow to the point we are starting or ending. Or just have on start, because is clear now what we ended.
 
 ---
 
@@ -66,13 +65,17 @@ I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
 
 ## I made this LED cube
 
-I'm going to show you how, from first principles.
+I'm going to show you how.
 
 ---
 
-### Backstory: Why I care about LEDs
+### Backstory: I like LEDs
 
-Shrug, LEDs tickle my brain in a great way.
+<!--
+
+Not sure why, LEDs tickle my brain in a great way.
+
+-->
 
 ---
 
@@ -120,13 +123,30 @@ WLED is off-the-shelf software for LED projects.
 
 <!--
 
-Obviously we're all here for Rust conf, so here's how to use LEDs plus Rust to make magic.
+Since we're here for Rust, here's how to use LEDs plus Rust to make magic.
 
 -->
 
 ---
 
-## Talk Outline
+## Start with the top
+
+```rust
+let mut control = ControlBuilder::new_3d()
+    .with_layout::<CubeLayout>()
+    .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
+    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
+    .build();
+
+loop {
+    let elapsed_in_ms = elapsed().as_millis();
+    control.tick(elapsed_in_ms).unwrap();
+}
+```
+
+---
+
+## Outline
 
 - `1.` `Driver`: How to make an LED be a color
   - `1.1.` `Color`: How our eyes perecive light
@@ -143,7 +163,7 @@ Let's start with the smallest building block, the LED, and build up from there.
 
 ---
 
-## 1. Driver
+## 1. LED Driver
 
 How to make an LED be a color
 
@@ -198,16 +218,7 @@ We use red, green, and blue because those most closely match our 3 photo-recepto
 
 ---
 
-### So how do we talk to these LEDs?
-
-There's two main types of addressable LEDs:
-
-- "Clocked": e.g. DotStar LEDs
-- "Clockless": e.g. NeoPixel LEDs
-
----
-
-### Basic `Driver` trait
+### Basic LED `Driver` trait
 
 ```rust
 pub struct Rgb {
@@ -235,7 +246,7 @@ We use an iterator to avoid heap allocations and minimize the memory usage.
 
 ---
 
-### Clocked LEDs
+### "Clocked" LEDs
 
 - Two wires: data + clock
 - Each bit: set data, tick clock, repeat
@@ -253,84 +264,11 @@ For every bit we want to send from the controller to the LEDs:
 - On the rising edge of the clock line, the LED will read the data line.
 - Halfway through the clock cycle, the controller will reset the clock line to LOW.
 
-Why it’s friendly:
-
-- Timing handled by the clock
-- Easy to drive via SPI
-
 -->
 
 ---
 
-### APA102 LEDs
-
-<div style="height: 100%; display: flex; justify-content: center; align-items: center;">
-  <img alt="APA102 data format" src="/media/apa102-format.png" style="height: 100%;" />
-</div>
-
----
-
-### Impl Apa102 Driver with SPI (Part 1)
-
-```rust
-#[derive(Debug)]
-struct Apa102Driver<Spi>
-where
-    Spi: SpiBus<u8>,
-{
-    writer: Spi,
-}
-
-impl<Spi> Driver for Apa102Driver<Spi>
-where
-    Spi: SpiBus<u8>,
-{
-    type Error = Spi::Error;
-
-    fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
-    where
-        I: IntoIterator<Item = Rgb>
-    {
-        // ...
-    }
-}
-```
-
----
-
-### Impl Apa102 Driver with SPI (Part 2)
-
-```rust
-fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
-where
-    I: IntoIterator<Item = Rgb>
-{
-    // Start frame
-    writer.write(&[0x00, 0x00, 0x00, 0x00])
-
-    let mut num_pixels = 0;
-    for rgb in pixels.into_iter().inspect(|_| num_pixels += 1) {
-        // LED frame
-        let brightness = 16; // 0 - 31
-        writer.write(&[0b11100000 | (brightness & 0b00011111)])?;
-
-        let led_frame: [u8; 3] = [rgb.blue, rgb.green, rgb.red];
-        writer.write(&led_frame)?;
-    }
-
-    // End frame(s)
-    let num_end_bytes = (num_pixels - 1).div_ceil(16);
-    for _ in 0..num_end_bytes {
-        writer.write(&[0x00])?
-    }
-
-    Ok(())
-}
-```
-
----
-
-### Clockless LEDs
+### "Clockless" LEDs
 
 - One wire, no clock
 - Bits are based on specific timings
@@ -341,7 +279,7 @@ where
 
 <!--
 
-A clockless protocol is based on specific timing periods, where chipsets have only a single data line.
+We'll be focusing on "Clockless" LEDs, as that's what I'm using for the cube.
 
 For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH for 0.4 µs, then LOW for 0.85 µs. These timings must be accurate to within 150 ns. That's tiny!
 
@@ -359,19 +297,13 @@ Example timing (WS2812B):
 - One wire, no clock
 - Bits are based on specific timings
 
-
 <div style="height: 70%; display: flex; justify-content: center; align-items: center;">
   <img alt="Clockless transmission" src="/media/clockless-transmission.svg" style="height: 100%;" />
 </div>
 
-
 ---
 
-### Using a trait to represent "clockless" timings
-
-Since we want to support all possible "clockless" LED chipsets, we can represent the timings for a particular chipset as a trait.
-
-Then, we can implement a driver using the timing trait as an argument (a generic type).
+### Using a trait to represent a "Clockless" chipset
 
 ```rust
 pub trait ClocklessLed {
@@ -392,12 +324,21 @@ pub trait ClocklessLed {
     /// This low signal period marks the end of a data frame and allows the LEDs
     /// to latch the received data and update their output.
     const T_RESET: Nanoseconds;
+
+    /// Specification of the color channel order and format.
+    ///
+    /// Different LED chipsets may expect data in different channel orders (e.g., RGB, GRB, RGBW).
+    const LED_CHANNELS: LedChannels;
 }
 ```
 
----
+<!--
 
-### Impl Clockless with delay
+Since we want to support all possible "Clockless" LED chipsets, we can represent the timings for a particular chipset as a trait.
+
+Then, we can implement a driver using the timing trait as an argument (a generic type).
+
+-->
 
 ---
 
@@ -442,21 +383,13 @@ And so on. Our eyes don’t notice the flicker on and off.
 
 Perceived brightness ≠ emitted photons
 
-<!--
-
-For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
-
--->
-
----
-
-### Gamma correction
-
 What we perceive to a linear change in photons is not linear.
 
 ![Gamma correction](/media/gamma-correction.svg)
 
 <!--
+
+For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
 
 This mismatch between physics and perception is why the “RGB” you think you know is actually gamma-encoded sRGB. sRGB allows us to think in terms of perception, where double the red value means double the perceived brightness of red. Then for LEDs, we convert the gamma-encoded sRGB to linear, to use as a gamma-corrected duty cycle.
 
@@ -466,59 +399,14 @@ By the way, if you start mixing RGB's, make sure to do so in the linear space.
 
 ---
 
-TODO below
-
----
-
-### Brightness and gamma
-
-<!--
-
-- Apply gamma correction and a single global brightness
-- Keep per-pixel math simple in your pattern
-
-Tip:
-- Use Hsv/Okhsv/Okhsl in patterns for intuitive control
-
--->
-
----
-
-TODO
-
 ### Color systems
 
-- sRGB vs linear sRGB vs HSV vs OkHsv
+- sRGB: What we think as "RGB"
+- Linear RGB: What use for LEDs
+- HSV: An easy color system
+- OkHsv: A new color system
 
----
-
-### Srgb
-
----
-
-### LinearSrgb
-
-LinearSrgb is what we convert into to drive our LEDs
-
----
-
-### Hsv
-
----
-
-### Okhsv
-
----
-
-### FromColor
-
----
-
-### Color correction
-
----
-
-### Future work: Multi-LED systems
+A `FromColor` trait converts between all the colors.
 
 ---
 
@@ -535,7 +423,6 @@ pub trait Driver {
         &mut self,
         pixels: I,
         brightness: f32,
-        correction: ColorCorrection,
     ) -> Result<(), Self::Error>
     where
         I: IntoIterator<Item = C>,
@@ -549,48 +436,13 @@ Changes?
 
 - FromColor trait
 - brightness: f32
-- correction: ColorCorrection
+
+Most drivers expect Linear RGB as their color.
 -->
 
 ---
 
-### Traits all the way down
-
-<!--
-
-To minimize duplication, we can abstract each LED into traits that describe:
-
-- For clocked LED's, the data format
-- For clockless LED's, the timing format
-- For all LED's, the order of pixel channel data
-
-And so on, but I don't have enough time to go deeper into this.
-
--->
-
----
-
-### Apa102 Trait
-
----
-
-### Ws2812 Trait
-
----
-
-### Okay, but what about async?
-
-It's basically the same, but using async.
-
-<!--
-
-You use async peripherals, like async SPI, async pin, and so on.
-
--->
-
----
-
-### Recap: Driver
+### Recap: LED Driver
 
 How to make an LED be a color
 
@@ -607,14 +459,6 @@ Where are the LEDs in space
 A common approach is to think in terms of arrays of pixels.
 
 But what if instead, every pixel had a position in space?
-
----
-
-### Animating in 3d spaces
-
-A common approach is to map a 2D projection onto a 3D surface.
-
-What if we animated the pixels natively in 3D?
 
 <!--
 
@@ -634,7 +478,7 @@ Think like graphics shaders.
 
 To understand what I mean about 3D layouts, look back at my LED tetrahedron:
 
-Each pixel has a position in 3D space. Unlike most 2D or 3D projection mappings, which take a 2D raster (pixels from an image or video) and project onto a 2D or 3D surface, the LED tetrahedron is more like a graphics shader, where for each pixel (which has a 3D position), and given the current time, you calculate the color. So we aren't mapping 2D pixels onto a 3D surface, we're directly calculating the animation for each pixel in 3D space.
+Each pixel has a position in 3D space. Similar to a graphics shader, for every frame we calculate the color of every pixel, using its position and the current time.
 
 -->
 
@@ -657,6 +501,10 @@ While this still looks good, it's missing the same spatial feel, each strut more
 
 ---
 
+### Counter-example: Cubes with WLED
+
+---
+
 ### Counter-example: DIY Vegas sphere
 
 <!--
@@ -671,46 +519,85 @@ Even in the best mappings, these are still 2D screens wrapped around a 3D surfac
 
 ---
 
-### Counter-example: Cubes with WLED
+### `Layout3d`
 
----
+Map 3d space -1.0 → 1.0
 
-
-### `Layout1d`
-
-Map 1d space -1.0 → 1.0
-
-- LED 0 at \( -1.0 \), last LED at \( 1.0 \)
-- Center is \( 0.0 \)
+- **X:** `-1.0` (left) → `1.0` (right)
+- **Y:** `-1.0` (bottom) → `1.0` (top)
+- **Z:** `-1.0` (back) → `1.0` (front)
 
 <!--
 
 Why -1.0 → 1.0? So 0.0 is the middle.
 
-This will be consistent across dimensional spaces.
-
 -->
 
 ---
 
-### Using `Layout1d`
+### `Shape3d`
 
----
-
-### `Layout2d`
-
-Map 2d space -1.0 → 1.0
-
-> For our 2D space, we can think of:
-> `(-1.0, -1.0)` bottom left → `(1.0, 1.0)` top right.
-
----
-
-### `Shape2d`
-
-## Create shapes in that space
+Create shapes in that space
 
 > points, lines, grids, arcs, etc.
+
+```rust
+/// Enumeration of three-dimensional shape primitives.
+///
+/// Each variant represents a different type of 3D arrangement of LEDs.
+#[derive(Debug, Clone)]
+pub enum Shape3d {
+    /// A single point at the specified location.
+    Point(Vec3),
+
+    /// A line of LEDs from `start` to `end` with `pixel_count` LEDs.
+    Line {
+        /// Starting point of the line
+        start: Vec3,
+        /// Ending point of the line
+        end: Vec3,
+        /// Number of LEDs along the line
+        pixel_count: usize,
+    },
+
+    /// A grid of LEDs defined by three corners and dimensions.
+    Grid {
+        /// Starting point (origin) of the grid
+        start: Vec3,
+        /// Ending point for first horizontal row (defines the horizontal axis)
+        horizontal_end: Vec3,
+        /// Ending point for first vertical column (defines the vertical axis)
+        vertical_end: Vec3,
+        /// Number of LEDs along each horizontal row
+        horizontal_pixel_count: usize,
+        /// Number of LEDs along each vertical column
+        vertical_pixel_count: usize,
+        /// Whether horizontal rows of LEDs are wired in a zigzag pattern
+        serpentine: bool,
+    },
+}
+```
+
+---
+
+### `shape.pixel_count()`
+
+```rust
+impl Shape3d {
+    /// Returns the total number of pixels (LEDs) in this shape.
+    pub const fn pixel_count(&self) -> usize {
+        match *self {
+            Shape3d::Point(_) => 1,
+            Shape3d::Line { pixel_count, .. } => pixel_count,
+            Shape3d::Grid {
+                horizontal_pixel_count,
+                vertical_pixel_count,
+                ..
+            } => horizontal_pixel_count * vertical_pixel_count,
+            Shape3d::Arc { pixel_count, .. } => pixel_count,
+        }
+    }
+```
 
 ---
 
@@ -718,37 +605,63 @@ Map 2d space -1.0 → 1.0
 
 > `shape.points()` maps each LED pixel into space between -1.0 and 1.0.
 
----
+```rust
+impl Shape3d {
+    /// Returns an iterator over all points (LED positions) in this shape.
+    pub fn points(&self) -> Shape3dPointsIterator {
+        match *self {
+            // Shape3d::Point => ...
+            // Shape3d::Line => ...
+            // Shape3d::Grid => ...
+        }
+        // ...
+    }
+}
+```
 
-### Learning: How to returning an iterator with no-alloc
+<!--
 
----
+How do we return a different iterator for each case, without allocations?
 
-### `Point2d`
+If we can't return `Box<dyn Iterator>`, what do we do?
 
----
+Return a struct that `impl Iterator`, which wraps sub-iterators for each case.
 
-### `Line2d`
-
----
-
-### `Grid2d`
-
-Notice the zig zag
-
----
-
-### Using `Layout2d`
-
----
-
-### `Layout3d`
+-->
 
 ---
 
-### `Shape3d`
+### Multi-case iterator with no-alloc
 
-Like `Shape2d`
+```rust
+/// Iterator over points in a 3D shape.
+#[derive(Debug)]
+pub enum Shape3dPointsIterator {
+    /// Iterator for a single point
+    Point(Once<Vec3>),
+    /// Iterator for points along a line
+    Line(StepIterator<Vec3, f32>),
+    /// Iterator for points in a grid
+    Grid(GridStepIterator<Vec3, f32>),
+}
+
+
+impl Iterator for Shape3dPointsIterator {
+    // ...
+}
+```
+
+---
+
+### LED Grids
+
+<img src="/media/layout-2d-points.svg" />
+
+<!--
+
+Zig zag
+
+-->
 
 ---
 
@@ -769,10 +682,6 @@ How to animate the space with color
 A pattern, most similar to a WLED effect, generates colors for each LED based on time and position.
 
 -->
-
----
-
-### Example 1d rainbow animation
 
 ---
 
@@ -801,17 +710,26 @@ where
 
 ---
 
-### `Dim`?
+### `Dim` and `LayoutForDim`?
 
-TODO
+```rust
+pub trait Pattern<Dim, Layout>
+where
+  Layout: LayoutForDim<Dim>,
+{
+    // ...
+}
+```
 
-(Do we even have time to talk about this?)
+And
 
-We need a marker trait because otherwise there'd have to be separate traits for each Pattern dimension.
+```rust
+impl<Layout: Layout1d> Pattern<Dim1d, Layout> for MyPattern {
+    // ...
+}
+```
 
-You can't implement the same trait with different generic types
-
-You can't
+Because you can't:
 
 ```rust
 impl<Layout: Layout1d> Pattern<Layout> {
@@ -823,21 +741,62 @@ impl<Layout: Layout2d> Pattern<Layout> {
 }
 ```
 
+<!--
+
+`Dim` is a type marker which allows us to use a single `Pattern` trait for all dimensions: 1d, 2d, 3d.
+
+This is because you can't implement the same trait with different generics.
+
+`Dim` is a generic type, we have the concrete types: `Dim1d`, `Dim2d`, `Dim3d`.
+
+Then, we have a trait `LayoutForDim`, which constrains the Layout to match the Dim marker.
+
+-->
+
 ---
 
-### 1d Rainbow `Pattern` trait
+### Noise functions
+
+(x, y, z, w) -> random number
+
+<!--
+
+Noise functions are random generators that are given a point and that smoothly interpolate over nearby points.
+
+-->
+
 
 ---
 
 ### Noise `Pattern`
 
----
+Using 4d noise function to generate colors in 3d.
 
-### 3d Noise `Pattern`
+```rust
+/// Generates colors for a 3D layout using noise.
+///
+/// The pattern uses the LED x,y,z position and time as inputs to a 4D noise function,
+/// mapping the noise value to a hue and value in the Okhsv color space.
+fn tick(&self, time_in_ms: u64) -> impl Iterator<Item = Self::Color> {
+    let Self { hue_noise, value_noise, params } = self;
+    let NoiseParams { time_scalar, position_scalar } = params;
 
----
+    let noise_time = time_in_ms as f32 * time_scalar;
 
-### ???
+    Layout::points().map(move |point| {
+        let noise_args = [
+            position_scalar * point.x,
+            position_scalar * point.y,
+            position_scalar * point.z,
+            noise_time,
+        ];
+        let hue = hue_noise.sample4(noise_args);
+        let saturation = 1.;
+        let value = 0.75 + 0.25 * value_noise.sample4(noise_args);
+        Okhsv::new(hue, saturation, value)
+    }
+}
+```
 
 ---
 
@@ -918,5 +877,3 @@ Blinksy: <https://blinksy.dev>
 Me: <https://mikey.nz>
 
 <PoweredBySlidev mt-10 />
-
----
