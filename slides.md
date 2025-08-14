@@ -38,18 +38,38 @@ TODO
 On the "start" and "end" slides of each section, show the whole outline, with an arrow to the point we are starting or ending. Or just have on start, because is clear now what we ended.
 
 ---
+layout: intro
+---
 
-# Rust In Color: Embedded LED Art
+<h1>
+  Rust In
+    <span class="color-ctp-red">C</span>
+    <span class="color-ctp-yellow">O</span>
+    <span class="color-ctp-green">L</span>
+    <span class="color-ctp-blue">O</span>
+    <span class="color-ctp-mauve">R</span>
+</h1>
 
-Beautiful art with LEDs:
+Embedded LED Art 🌈
 
 > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
+
+<div class="flex justify-center m-6">
+  <img src="/media/blinksy.gif" class="w-50 h-50" />
+</div>
+
+<div class="absolute bottom-10">
+  <span class="font-700">
+    mikey.nz ( @ahdinosaur)
+  </span>
+</div>
 
 <div class="abs-br m-6 text-xl">
   <a href="https://github.com/ahdinosaur/rustforge-2025-rust-in-color" target="_blank" class="slidev-icon-btn">
     <carbon:logo-github />
   </a>
 </div>
+
 
 ---
 
@@ -62,11 +82,23 @@ I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
 - Cares about creative tech and community
 
 ---
+layout: center
+---
 
 ## I made this LED cube
 
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/led-cube.webm" type="video/webm">
+</video>
+
+<!--
+
 I'm going to show you how.
 
+-->
+
+---
+layout: statement
 ---
 
 ### Backstory: I like LEDs
@@ -78,18 +110,22 @@ Not sure why, LEDs tickle my brain in a great way.
 -->
 
 ---
+layout: center
+---
 
 ### Prior art: LED suspenders using FastLED
 
-<video controls autoplay loop muted class="w-full h-full">
-  <source src="/media/led-suspenders.mp4#t=15" type="video/mp4">
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/led-suspenders.mp4" type="video/mp4">
 </video>
 
+---
+layout: center
 ---
 
 ### Prior art: Tetrahedron using Rust
 
-<video controls autoplay loop muted class="w-full h-full">
+<video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-tetrahedron.mp4" type="video/mp4">
 </video>
 
@@ -104,10 +140,12 @@ We use this position in 3d space to compute the color for each animation frame.
 -->
 
 ---
+layout: center
+---
 
 ### Prior art: Tensegrity using WLED
 
-<video controls autoplay loop muted class="w-full h-full">
+<video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-tensegrity.mp4" type="video/mp4">
 </video>
 
@@ -118,8 +156,10 @@ WLED is off-the-shelf software for LED projects.
 -->
 
 ---
+layout: statement
+---
 
-### LEDs + Rust = <3
+## LEDs + Rust = <3
 
 <!--
 
@@ -129,7 +169,7 @@ Since we're here for Rust, here's how to use LEDs plus Rust to make magic.
 
 ---
 
-## Start with the top
+### Start with the final code
 
 ```rust
 let mut control = ControlBuilder::new_3d()
@@ -146,7 +186,7 @@ loop {
 
 ---
 
-## Outline
+## Talk Outline
 
 - `1.` `Driver`: How to make an LED be a color
   - `1.1.` `Color`: How our eyes perecive light
@@ -168,12 +208,16 @@ Let's start with the smallest building block, the LED, and build up from there.
 How to make an LED be a color
 
 ---
+layout: statement
+---
 
 ### Let's start with LED basics
 
 ---
+layout: fact
+---
 
-### What are RGB LEDs
+### What are LEDs
 
 LED = Light-emitting diode
 
@@ -183,6 +227,8 @@ Black magic where a tiny surface emits light.
 
 -->
 
+---
+layout: fact
 ---
 
 ### What are RGB LEDs
@@ -205,9 +251,9 @@ We use red, green, and blue because those most closely match our 3 photo-recepto
 
 ### What are addressable LEDs?
 
-- You only talk to one LED, but after it's been given a color it passes on the next color to the next LED.
+- You talk to the first LED, it will talk to the next LED.
 - Like filling a bucket, that overflows to the next bucket.
-- So you must tell provide a color to every LED on every frame
+- So you must provide a color to every LED on every frame
 
 <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; height: 20%;">
   <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
@@ -673,6 +719,8 @@ Zig zag
 
 Where are the LEDs in space
 
+---
+
 ## 3. Pattern
 
 How to animate the space with color
@@ -862,12 +910,10 @@ How to start an LED project now
 
 ## Come play with me
 
-Find me later, I have LEDs and microcontrollers you can play with.
+Find me, I have LEDs and microcontrollers you can play with.
 
 ---
-
 layout: center
-class: text-center
 ---
 
 ## Thanks for listening
@@ -875,5 +921,3 @@ class: text-center
 Blinksy: <https://blinksy.dev>
 
 Me: <https://mikey.nz>
-
-<PoweredBySlidev mt-10 />
