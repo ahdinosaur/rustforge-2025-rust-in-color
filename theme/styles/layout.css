@@ -57,6 +57,10 @@
     @apply text-2xl mb-4;
   }
 
+  ol {
+    list-style: decimal;
+  }
+
   li {
     @apply ml-1.1em pl-0.2em leading-1.8em;
   }
@@ -161,5 +165,69 @@
   h1 {
     @apply text-6xl font-500 leading-20;
     color: var(--ctp-green);
+  }
+}
+
+.slidev-layout.outline {
+  ol {
+    @apply list-decimal list-outside text-4xl leading-tight;
+
+    > li {
+      @apply relative transition-opacity transition-transform duration-200 ease-in-out;
+
+      /* Upcoming item = contains a bold */
+      &:has(> strong),
+      &:has(> p > strong) {
+        @apply opacity-100 pl-8 font-extrabold translate-x-0.5;
+
+        &::before {
+          content: '→';
+          @apply absolute left-0 font-extrabold text-primary;
+        }
+
+        /* Show child list for upcoming item */
+        > ol {
+          @apply block;
+        }
+      }
+
+      /* Child list hidden by default */
+      > ol {
+        @apply hidden mt-1 opacity-85;
+      }
+
+      /* Show child list if item is bold */
+      &:has(> ol > li > strong),
+      &:has(> ol > li > p > strong) {
+        > ol {
+          @apply block;
+        }
+      }
+    }
+
+    /* If there is at least one upcoming item, dim the rest */
+    &:has(> li > strong),
+    &:has(> li > p > strong),
+    {
+      > li {
+        @apply opacity-50;
+      }
+      > li:has(> strong),
+      > li:has(> p > strong) {
+        @apply opacity-100;
+      }
+    }
+
+    &:has(> li > ol > li > strong),
+    &:has(> li > ol > li > p > strong),
+    {
+      > li {
+        @apply opacity-50;
+      }
+      > li:has(> ol > li > strong),
+      > li:has(> ol > li > p > strong) {
+        @apply opacity-100;
+      }
+    }
   }
 }

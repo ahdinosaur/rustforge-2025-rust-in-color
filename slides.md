@@ -185,15 +185,17 @@ loop {
 ```
 
 ---
+layout: outline
+---
 
 ## Talk Outline
 
-- `1.` `Driver`: How to make an LED be a color
-  - `1.1.` `Color`: How our eyes perecive light
-- `2.` `Layout`: Where are the LEDs in space
-- `3.` `Pattern`: How to animate the space with color
-- `4.` `Control`: How to put these together
-- `5.` Quickstart: How to start an LED project now
+1. Driver: How to make an LED be a color
+    1. Color: How our eyes perecive light
+2. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+4. Control: How to put these together
+5. Quickstart: How to start an LED project now
 
 <!--
 
@@ -202,10 +204,17 @@ Let's start with the smallest building block, the LED, and build up from there.
 -->
 
 ---
+layout: outline
+---
 
-## 1. LED Driver
+## Talk Outline
 
-How to make an LED be a color
+1. **Driver: How to make an LED be a color**
+    1. Color: How our eyes perecive light
+2. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+4. Control: How to put these together
+5. Quickstart: How to start an LED project now
 
 ---
 layout: statement
@@ -395,10 +404,17 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 ### The problem with naive RGB
 
 ---
+layout: outline
+---
 
-## 1.1. Color
+## Talk Outline
 
-How our eyes perceive light
+1. Driver: How to make an LED be a color
+    1. **Color: How our eyes perecive light**
+2. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+4. Control: How to put these together
+5. Quickstart: How to start an LED project now
 
 <!--
 
@@ -487,16 +503,17 @@ Most drivers expect Linear RGB as their color.
 -->
 
 ---
-
-### Recap: LED Driver
-
-How to make an LED be a color
-
+layout: outline
 ---
 
-## 2. Layout
+## Talk Outline
 
-Where are the LEDs in space
+1. Driver: How to make an LED be a color
+    1. Color: How our eyes perecive light
+2. **Layout: Where are the LEDs in space**
+3. Pattern: How to animate the space with color
+4. Control: How to put these together
+5. Quickstart: How to start an LED project now
 
 ---
 
@@ -714,16 +731,17 @@ Zig zag
 ### Using `Layout3d`
 
 ---
-
-### Recap: Layout
-
-Where are the LEDs in space
-
+layout: outline
 ---
 
-## 3. Pattern
+## Talk Outline
 
-How to animate the space with color
+1. Driver: How to make an LED be a color
+    1. Color: How our eyes perecive light
+2. Layout: Where are the LEDs in space
+3. **Pattern: How to animate the space with color**
+4. Control: How to put these together
+5. Quickstart: How to start an LED project now
 
 <!--
 
@@ -847,17 +865,19 @@ fn tick(&self, time_in_ms: u64) -> impl Iterator<Item = Self::Color> {
 ```
 
 ---
-
-### Recap: Pattern
-
-How to animate the space with color
-
+layout: outline
 ---
 
+## Talk Outline
 
-## 4. `Control`
+1. Driver: How to make an LED be a color
+    1. Color: How our eyes perecive light
+2. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+4. **Control**: How to put these together
+5. Quickstart: How to start an LED project now
 
-How to put these together
+---
 
 ### `Control` struct
 
@@ -874,10 +894,17 @@ We use a `ControlBuilder` to build a `Control`.
 ### ???
 
 ---
+layout: outline
+---
 
-## 5. Quickstart
+## Talk Outline
 
-How to start an LED project now
+1. Driver: How to make an LED be a color
+    1. Color: How our eyes perecive light
+2. Layout: Where are the LEDs in space
+3. Pattern: How to animate the space with color
+4. Control: How to put these together
+5. **Quickstart**: How to start an LED project now
 
 ---
 
