@@ -191,7 +191,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. Layout: Where are the LEDs in space
 3. Pattern: How to animate the space with color
 4. Control: How to put these together
@@ -210,7 +210,7 @@ layout: outline
 ## Talk Outline
 
 1. **Driver: How to make an LED be a color**
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. Layout: Where are the LEDs in space
 3. Pattern: How to animate the space with color
 4. Control: How to put these together
@@ -410,7 +410,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. **Color: How our eyes perecive light**
+    1. **Color: How our eyes perceive light**
 2. Layout: Where are the LEDs in space
 3. Pattern: How to animate the space with color
 4. Control: How to put these together
@@ -509,7 +509,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. **Layout: Where are the LEDs in space**
 3. Pattern: How to animate the space with color
 4. Control: How to put these together
@@ -737,7 +737,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. Layout: Where are the LEDs in space
 3. **Pattern: How to animate the space with color**
 4. Control: How to put these together
@@ -871,7 +871,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. Layout: Where are the LEDs in space
 3. Pattern: How to animate the space with color
 4. **Control**: How to put these together
@@ -900,7 +900,7 @@ layout: outline
 ## Talk Outline
 
 1. Driver: How to make an LED be a color
-    1. Color: How our eyes perecive light
+    1. Color: How our eyes perceive light
 2. Layout: Where are the LEDs in space
 3. Pattern: How to animate the space with color
 4. Control: How to put these together

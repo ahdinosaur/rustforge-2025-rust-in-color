@@ -169,6 +169,10 @@
 }
 
 .slidev-layout.outline {
+  > ol {
+    @apply ml-6
+  }
+
   ol {
     @apply list-decimal list-outside text-4xl leading-tight;
 
@@ -178,52 +182,33 @@
       /* Upcoming item = contains a bold */
       &:has(> strong),
       &:has(> p > strong) {
-        @apply opacity-100 pl-8 font-extrabold translate-x-0.5;
+        &::marker, > strong, > p > strong {
+          @apply opacity-100 font-extrabold translate-x-1;
+        }
 
         &::before {
           content: '→';
-          @apply absolute left-0 font-extrabold text-primary;
-        }
-
-        /* Show child list for upcoming item */
-        > ol {
-          @apply block;
+          @apply absolute -left-20 font-extrabold text-primary;
         }
       }
 
-      /* Child list hidden by default */
       > ol {
-        @apply hidden mt-1 opacity-85;
-      }
+        list-style-type: lower-latin;
 
-      /* Show child list if item is bold */
-      &:has(> ol > li > strong),
-      &:has(> ol > li > p > strong) {
-        > ol {
-          @apply block;
-        }
       }
     }
 
-    /* If there is at least one upcoming item, dim the rest */
+    /* If there is at least one bolded item, dim the rest */
     &:has(> li > strong),
     &:has(> li > p > strong),
-    {
-      > li {
-        @apply opacity-50;
-      }
-      > li:has(> strong),
-      > li:has(> p > strong) {
-        @apply opacity-100;
-      }
-    }
-
     &:has(> li > ol > li > strong),
     &:has(> li > ol > li > p > strong),
     {
       > li {
         @apply opacity-50;
       }
+      > li:has(> strong),
+      > li:has(> p > strong),
       > li:has(> ol > li > strong),
       > li:has(> ol > li > p > strong) {
         @apply opacity-100;
