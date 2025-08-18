@@ -47,17 +47,17 @@ Embedded LED Art 🌈
 
 > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
-<div class="flex justify-center m-6">
-  <img src="/media/blinksy.gif" class="w-50 h-50" />
+<div class="flex flex-col items-center justify-center mt-6">
+  <img src="/media/blinksy.gif" class="w-65 h-65" />
 </div>
 
-<div class="absolute bottom-10">
+<div class="absolute bottom-6">
   <span class="font-700">
     mikey.nz ( @ahdinosaur)
   </span>
 </div>
 
-<div class="abs-br m-6 text-xl">
+<div class="absolute bottom-5 right-6 text-xl">
   <a href="https://github.com/ahdinosaur/rustforge-2025-rust-in-color" target="_blank" class="slidev-icon-btn">
     <carbon:logo-github />
   </a>
@@ -91,7 +91,7 @@ I'm going to show you how.
 -->
 
 ---
-layout: statement
+layout: big-center
 ---
 
 ### Backstory: I like LEDs
@@ -149,7 +149,7 @@ WLED is off-the-shelf software for LED projects.
 -->
 
 ---
-layout: statement
+layout: big-center
 ---
 
 ## LEDs + Rust = <3
@@ -216,13 +216,13 @@ layout: outline
 5. Quickstart: How to start an LED project now
 
 ---
-layout: statement
+layout: big-center
 ---
 
 ### Let's start with LED basics
 
 ---
-layout: fact
+layout: big-center
 ---
 
 ### What are LEDs
@@ -236,14 +236,14 @@ Black magic where a tiny surface emits light.
 -->
 
 ---
-layout: fact
+layout: big-center
 ---
 
 ### What are RGB LEDs
 
 RGB = Red + Green + Blue
 
-<img alt="NeoPixel close-up" src="/media/neopixel-closeup.webp" class="h-50 w-50" />
+<img alt="NeoPixel close-up" src="/media/neopixel-closeup.webp" class="mt-3 h-0" />
 
 <!--
 
@@ -398,6 +398,8 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 ### Impl Clockless with RMT
 
+???
+
 <img src="/media/esp32-rmt.png" />
 
 <!--
@@ -406,10 +408,8 @@ The board I'm using, the ESP32, has a peripheral for infrared transceivers (like
 
 -->
 
-???
-
 ---
-layout: fact
+layout: big-center
 ---
 
 ### The problem with naive RGB
@@ -779,7 +779,7 @@ A pattern, most similar to a WLED effect, generates colors for each LED based on
 -->
 
 ---
-layout: fact
+layout: big-center
 ---
 
 ### Animation patterns
@@ -858,7 +858,7 @@ Then, we have a trait `LayoutForDim`, which constrains the Layout to match the D
 -->
 
 ---
-layout: fact
+layout: big-center
 ---
 
 ### Noise functions

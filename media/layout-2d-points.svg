@@ -58,9 +58,11 @@
 
   <title>2D LED Grid Layout (16x16 Pixels)</title>
 
+  <!--
   <text x="310" y="30" class="title-text">
     2D LED Grid Layout (16x16 Pixels)
   </text>
+  -->
 
   <!-- Constants for manual calculation reference
     gridSvgXStart = 70

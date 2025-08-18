@@ -115,6 +115,10 @@
     border-bottom: 2px solid var(--ctp-surface1);
     color: var(--ctp-text);
   }
+
+  img, video {
+    @apply flex-1;
+  }
 }
 
 .slidev-layout.intro-image,
@@ -136,21 +140,13 @@
   }
 }
 
-.slidev-layout.fact {
+.slidev-layout.big-center {
   @apply text-center;
   h1,h2,h3 {
     @apply text-6xl font-700;
   }
   h1,h2,h3 + p {
     @apply text-4xl font-700;
-  }
-}
-
-.slidev-layout.statement {
-  @apply text-center;
-
-  h1, h2, h3 {
-    @apply text-6xl font-700;
   }
 }
 
