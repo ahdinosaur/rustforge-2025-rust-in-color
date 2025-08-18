@@ -121,6 +121,10 @@
   }
 }
 
+.slidev-layout.default {
+  @apply h-full v-full flex flex-col justify-start;
+}
+
 .slidev-layout.intro-image,
 .slidev-layout.intro {
   @apply h-full;

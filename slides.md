@@ -31,7 +31,8 @@ mdc: true
 # seoMeta:
 #  ogImage: https://cover.sli.dev
 
-layout: intro
+layout: intro-image-right
+image: /media/blinksy.gif
 ---
 
 <h1>
@@ -48,7 +49,7 @@ Embedded LED Art 🌈
 > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
 <div class="flex flex-col items-center justify-center mt-6">
-  <img src="/media/blinksy.gif" class="w-65 h-65" />
+  <img src="" class="w-65 h-65" />
 </div>
 
 <div class="absolute bottom-6">
@@ -869,7 +870,9 @@ layout: big-center
 
 <!--
 
-Noise functions are random generators that are given a point and that smoothly interpolate over nearby points.
+Noise functions are random generators that given a point, returns a random sample that smoothly interpolate over nearby points.
+
+We're going to use noise functions to generate colors.
 
 -->
 
@@ -877,13 +880,8 @@ Noise functions are random generators that are given a point and that smoothly i
 
 ### Noise `Pattern`
 
-Using 4d noise function to generate colors in 3d.
-
 ```rust
-/// Generates colors for a 3D layout using noise.
-///
-/// The pattern uses the LED x,y,z position and time as inputs to a 4D noise function,
-/// mapping the noise value to a hue and value in the Okhsv color space.
+/// Generates colors for a 3D layout using a 4D noise function.
 fn tick(&self, time_in_ms: u64) -> impl Iterator<Item = Self::Color> {
     let Self { hue_noise, value_noise, params } = self;
     let NoiseParams { time_scalar, position_scalar } = params;
@@ -904,6 +902,22 @@ fn tick(&self, time_in_ms: u64) -> impl Iterator<Item = Self::Color> {
     }
 }
 ```
+
+<style>
+  code {
+    @apply text-lg leading-none;
+  }
+</style>
+
+<!--
+
+Here we use a 4D noise function to generate colors in 3D.
+
+(x, y, z, time) -> colors for 3D layout
+
+The pattern uses the LED x,y,z position and time as inputs to a 4D noise function, mapping the noise value to a hue and value in the Okhsv color space.
+
+-->
 
 ---
 layout: outline
