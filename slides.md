@@ -934,19 +934,135 @@ layout: outline
 
 ---
 
-### `Control` struct
+### Back to the final code
 
-Then we run our main loop, calling `.tick()` with the current time in milliseconds.
+```rust
+let mut control = ControlBuilder::new_3d()
+    .with_layout::<CubeLayout>()
+    .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
+    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
+    .build();
 
-### `Control`'s type signature is out of control
+loop {
+    let elapsed_in_ms = elapsed().as_millis();
+    control.tick(elapsed_in_ms).unwrap();
+}
+```
+
+### `Control` is out of control
+
+```rust
+struct Control<Dim, Layout, Pattern, Driver> {
+    dim: PhantomData<Dim>,
+    layout: PhantomData<Layout>,
+    pattern: Pattern,
+    driver: Driver,
+    brightness: f32,
+}
+
+
+impl<Dim, Layout, Pattern, Driver> Control<Dim, Layout, Pattern, Driver>
+where
+    Driver: DriverTrait,
+    Driver::Color: FromColor<Pattern::Color>,
+    Layout: LayoutForDim<Dim>,
+    Pattern: PatternTrait<Dim, Layout>,
+{
+    // fn tick ...
+}
+```
 
 ### Enter `ControlBuilder`
 
 We use a `ControlBuilder` to build a `Control`.
 
+How do we manage the type madness?
+
 ---
 
-### ???
+### Start with a generic `ControlBuilder`
+
+```rust
+pub struct ControlBuilder<Dim, Layout, Pattern, Driver> {
+    dim: PhantomData<Dim>,
+    layout: PhantomData<Layout>,
+    pattern: Pattern,
+    driver: Driver,
+}
+```
+
+### Impl for unit type: the first step
+
+```rust
+impl ControlBuilder<(), (), (), ()> {
+    /// Starts building a three-dimensional control system.
+    ///
+    /// # Returns
+    ///
+    /// A builder initialized for 3D
+    pub fn new_3d() -> ControlBuilder<Dim3d, (), (), ()> {
+        ControlBuilder {
+            dim: PhantomData,
+            layout: PhantomData,
+            pattern: (),
+            driver: (),
+        }
+    }
+}
+```
+
+---
+
+### For each step, impl for generics
+
+```rust
+
+impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
+    /// Specifies the LED driver for the control system.
+    ///
+    /// # Arguments
+    ///
+    /// * `driver` - The LED driver instance
+    ///
+    /// # Returns
+    ///
+    /// Builder with driver specified
+    pub fn with_driver<Driver>(self, driver: Driver) -> ControlBuilder<Dim, Layout, Pattern, Driver>
+    where
+        Driver: DriverTrait,
+    {
+        ControlBuilder {
+            dim: self.dim,
+            layout: self.layout,
+            pattern: self.pattern,
+            driver,
+        }
+    }
+}
+```
+
+---
+
+### At the end we have it made
+
+```rust
+impl<Dim, Layout, Pattern, Driver> ControlBuilder<Dim, Layout, Pattern, Driver>
+where
+    Layout: LayoutForDim<Dim>,
+    Pattern: PatternTrait<Dim, Layout>,
+    Driver: DriverTrait,
+    Driver::Color: FromColor<Pattern::Color>,
+{
+    /// Builds the final [`Control`] struct.
+    ///
+    /// # Returns
+    ///
+    /// A fully configured Control instance
+    pub fn build(self) -> Control<Dim, Layout, Pattern, Driver> {
+        Control::new(self.pattern, self.driver)
+    }
+}
+```
 
 ---
 layout: outline
@@ -965,11 +1081,23 @@ layout: outline
 
 ### Blinksy
 
+A Rust LED library with everything and more:
+
+<https://blinksy.dev>
+
+<!--
+
+Everything I've shown you, and more, is available as a Rust library called Blinksy.
+
+I hope to help people make art with LEDs.
+
+-->
+
 ---
 
-### Desktop
+### Desktop simulation
 
-> Blinksy also has a way to simulate on your desktop: `blinksy-desktop`.
+Blinksy also has a way to simulate on your desktop: `blinksy-desktop`.
 
 ---
 
@@ -979,6 +1107,8 @@ layout: outline
 
 <!--
 
+If you wanna start now, I made a quickstart project.
+
 - Allows you to write code and run on both desktop and microcontroller.
 - Uses Gledopto microcontroller, an affordable device on AliExpress
 
@@ -986,19 +1116,15 @@ layout: outline
 
 ---
 
-### ???
-
----
-
 ## Come play with me
 
-Find me, I have LEDs and microcontrollers you can play with.
+Find me, in person or online, I'm happy to help!
 
 ---
 layout: center
 ---
 
-## Thanks for listening
+## Thanks!
 
 Blinksy: <https://blinksy.dev>
 
