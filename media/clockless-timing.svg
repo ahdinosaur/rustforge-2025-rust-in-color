@@ -2,7 +2,7 @@
 <svg
   width="100%"
   height="100%"
-  viewBox="0 0 165 180"
+  viewBox="0 0 165 160"
   preserveAspectRatio="xMidYMid meet"
   xmlns="http://www.w3.org/2000/svg"
 >
@@ -63,9 +63,7 @@
 
   <title>Clockless Bit Timing</title>
 
-  <text x="82.5" y="15" class="title-text">Clockless Bit Timing</text>
-
-  <g transform="translate(20, 40)">
+  <g transform="translate(20, 20)">
     <!-- 0 Label -->
     <text x="-10" y="25" class="bit-text">0</text>
 
@@ -81,7 +79,7 @@
     <text x="85" y="0" class="timing-text timing-text-low">T0L</text>
   </g>
 
-  <g transform="translate(20, 120)">
+  <g transform="translate(20, 100)">
     <!-- 1 Label -->
     <text x="-10" y="25" class="bit-text">1</text>
 

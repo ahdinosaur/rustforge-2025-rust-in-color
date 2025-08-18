@@ -2,7 +2,7 @@
 <svg
   width="100%"
   height="100%"
-  viewBox="0 0 620 130"
+  viewBox="0 -15 620 90"
   preserveAspectRatio="xMidYMid meet"
   xmlns="http://www.w3.org/2000/svg"
 >
@@ -54,16 +54,14 @@
 
   <title>Clockless Byte Example</title>
 
-  <text x="310" y="25" class="title-text">Clockless Byte Example</text>
-
   <!-- Data Signal Label -->
-  <text x="40" y="75" class="signal-text" text-anchor="end">DATA</text>
+  <text x="40" y="25" class="signal-text" text-anchor="end">DATA</text>
 
   <!-- Logic level labels -->
-  <text x="30" y="50" class="level-text" text-anchor="end">H</text>
-  <text x="30" y="100" class="level-text" text-anchor="end">L</text>
+  <text x="30" y="0" class="level-text" text-anchor="end">H</text>
+  <text x="30" y="50" class="level-text" text-anchor="end">L</text>
 
-  <g transform="translate(45, 50)">
+  <g transform="translate(45, 0)">
     <!-- Horizontal reference lines -->
     <line x1="0" y1="0" x2="570" y2="0" class="axis-line" />
     <line x1="0" y1="50" x2="570" y2="50" class="axis-line" />

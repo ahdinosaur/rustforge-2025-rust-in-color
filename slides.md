@@ -31,13 +31,6 @@ mdc: true
 # seoMeta:
 #  ogImage: https://cover.sli.dev
 
----
-
-TODO
-
-On the "start" and "end" slides of each section, show the whole outline, with an arrow to the point we are starting or ending. Or just have on start, because is clear now what we ended.
-
----
 layout: intro
 ---
 
@@ -184,6 +177,12 @@ loop {
 }
 ```
 
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
 ---
 layout: outline
 ---
@@ -244,9 +243,7 @@ layout: fact
 
 RGB = Red + Green + Blue
 
-TODO image like https://circuitcamp.wordpress.com/2018/10/11/adafruit-neopixel-ws2812-led-complete-beginners-guide/
-
-or https://www.youtube.com/watch?v=lIePNCM7ldc
+<img alt="NeoPixel close-up" src="/media/neopixel-closeup.webp" class="h-50 w-50" />
 
 <!--
 
@@ -291,6 +288,12 @@ pub trait Driver {
 }
 ```
 
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
 <!--
 
 We'll start with a basic `Driver` trait, similar to `smart-leds` crate.
@@ -306,7 +309,7 @@ We use an iterator to avoid heap allocations and minimize the memory usage.
 - Two wires: data + clock
 - Each bit: set data, tick clock, repeat
 
-<img src="/media/clocked-transmission.svg" />
+<img alt="Clocked transmission" src="/media/clocked-transmission.svg" class="mt-5" />
 
 <!--
 
@@ -328,9 +331,7 @@ For every bit we want to send from the controller to the LEDs:
 - One wire, no clock
 - Bits are based on specific timings
 
-<div style="height: 70%; display: flex; justify-content: center; align-items: center;">
-  <img alt="Clockless timing" src="/media/clockless-timing.svg" style="height: 100%;" />
-</div>
+<img alt="Clockless timing" src="/media/clockless-timing.svg" />
 
 <!--
 
@@ -347,18 +348,16 @@ Example timing (WS2812B):
 
 ---
 
-### Clockless LEDs (Part 2)
+### "Clockless" LEDs (Part 2)
 
 - One wire, no clock
 - Bits are based on specific timings
 
-<div style="height: 70%; display: flex; justify-content: center; align-items: center;">
-  <img alt="Clockless transmission" src="/media/clockless-transmission.svg" style="height: 100%;" />
-</div>
+<img alt="Clockless transmission" src="/media/clockless-transmission.svg" class="mt-5" />
 
 ---
 
-### Using a trait to represent a "Clockless" chipset
+### Trait to describe a "Clockless" chipset
 
 ```rust
 pub trait ClocklessLed {
@@ -399,9 +398,24 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 ### Impl Clockless with RMT
 
+<img src="/media/esp32-rmt.png" />
+
+<!--
+
+The board I'm using, the ESP32, has a peripheral for infrared transceivers (like a TV remote), however it can be used for transmitting any type of signal as pulses.
+
+-->
+
+???
+
+---
+layout: fact
 ---
 
 ### The problem with naive RGB
+
+Colors are more complex than you might think.
+
 
 ---
 layout: outline
@@ -426,11 +440,11 @@ Versus what LEDs emit.
 
 ### Pulse-width modulation
 
-![LED PWM (Pulse-Width Modulation)](/media/led-pwm.svg)
+An LED can only be **ON** or **OFF**
+
+<img alt="LED PWM (Pulse-Width Modulation)" src="/media/led-pwm.svg" />
 
 <!--
-
-Each LED is controlled via pulse-width modulation (PWM).
 
 - If you tell an LED to be 100% bright, it will be on for 100% of the time (a 100% duty cycle).
 - If you tell an LED to be 50% bright, it will be on for 50% of the time (a 50% duty cycle).
@@ -441,15 +455,16 @@ And so on. Our eyes don’t notice the flicker on and off.
 
 ---
 
-### Perception vs physics
+### Emitted photons ≠ Perceived brightness
 
-Perceived brightness ≠ emitted photons
-
-What we perceive to a linear change in photons is not linear.
-
-![Gamma correction](/media/gamma-correction.svg)
+<div class="mt-2 flex flex-row justify-center align-center">
+  <img alt="Uncorrected brightness" src="/media/brightness-uncorrected.svg" class="w-1/2" />
+  <img alt="Corrected brightness" src="/media/brightness-corrected.svg" class="w-1/2" />
+</div>
 
 <!--
+
+What we perceive to a linear change in photons is not linear.
 
 For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
 
@@ -466,15 +481,13 @@ By the way, if you start mixing RGB's, make sure to do so in the linear space.
 - sRGB: What we think as "RGB"
 - Linear RGB: What use for LEDs
 - HSV: An easy color system
-- OkHsv: A new color system
+- OkHsv: A correct color system
 
 A `FromColor` trait converts between all the colors.
 
 ---
 
-### A better `Driver` trait
-
-Now we want to improve how our `Driver` handles colors, with respect to human perception.
+### A better LED `Driver` trait
 
 ```rust
 pub trait Driver {
@@ -492,11 +505,19 @@ pub trait Driver {
 }
 ```
 
+<style>
+    code {
+        @apply text-lg;
+    }
+</style>
+
 <!--
 
-Changes?
+Now let's improve how our `Driver` handles colors, with respect to human perception.
 
-- FromColor trait
+Changes:
+
+- `FromColor` trait
 - brightness: f32
 
 Most drivers expect Linear RGB as their color.
@@ -584,7 +605,7 @@ Even in the best mappings, these are still 2D screens wrapped around a 3D surfac
 
 ### `Layout3d`
 
-Map 3d space -1.0 → 1.0
+Map 3D space `-1.0` → `1.0`
 
 - **X:** `-1.0` (left) → `1.0` (right)
 - **Y:** `-1.0` (bottom) → `1.0` (top)
@@ -598,48 +619,48 @@ Why -1.0 → 1.0? So 0.0 is the middle.
 
 ---
 
+### LED Grids
+
+<img src="/media/layout-2d-points.svg" />
+
+<!--
+
+Zig zag
+
+-->
+
+---
+
+
 ### `Shape3d`
 
-Create shapes in that space
-
-> points, lines, grids, arcs, etc.
+Create shapes of LEDs in that 3D space
 
 ```rust
 /// Enumeration of three-dimensional shape primitives.
-///
-/// Each variant represents a different type of 3D arrangement of LEDs.
-#[derive(Debug, Clone)]
 pub enum Shape3d {
-    /// A single point at the specified location.
+    /// A single LED at the specified location.
     Point(Vec3),
 
     /// A line of LEDs from `start` to `end` with `pixel_count` LEDs.
     Line {
-        /// Starting point of the line
-        start: Vec3,
-        /// Ending point of the line
-        end: Vec3,
-        /// Number of LEDs along the line
-        pixel_count: usize,
+        // ...
     },
 
     /// A grid of LEDs defined by three corners and dimensions.
     Grid {
-        /// Starting point (origin) of the grid
-        start: Vec3,
-        /// Ending point for first horizontal row (defines the horizontal axis)
-        horizontal_end: Vec3,
-        /// Ending point for first vertical column (defines the vertical axis)
-        vertical_end: Vec3,
-        /// Number of LEDs along each horizontal row
-        horizontal_pixel_count: usize,
-        /// Number of LEDs along each vertical column
-        vertical_pixel_count: usize,
-        /// Whether horizontal rows of LEDs are wired in a zigzag pattern
-        serpentine: bool,
+        // ...
     },
+
+    // ...
 }
 ```
+
+<style>
+    code {
+        @apply text-lg leading-none;
+    }
+</style>
 
 ---
 
@@ -662,11 +683,15 @@ impl Shape3d {
     }
 ```
 
+<style>
+    code {
+        @apply text-lg;
+    }
+</style>
+
 ---
 
-### `shape.points()`: A function that returns points for each pixel
-
-> `shape.points()` maps each LED pixel into space between -1.0 and 1.0.
+### `shape.points()`
 
 ```rust
 impl Shape3d {
@@ -682,7 +707,15 @@ impl Shape3d {
 }
 ```
 
+<style>
+    code {
+        @apply text-2xl;
+    }
+</style>
+
 <!--
+
+`shape.points()` maps each LED pixel into space between -1.0 and 1.0.
 
 How do we return a different iterator for each case, without allocations?
 
@@ -694,11 +727,10 @@ Return a struct that `impl Iterator`, which wraps sub-iterators for each case.
 
 ---
 
-### Multi-case iterator with no-alloc
+### ~~`Box<dyn Iterator>`~~ for no-alloc
 
 ```rust
 /// Iterator over points in a 3D shape.
-#[derive(Debug)]
 pub enum Shape3dPointsIterator {
     /// Iterator for a single point
     Point(Once<Vec3>),
@@ -708,27 +740,24 @@ pub enum Shape3dPointsIterator {
     Grid(GridStepIterator<Vec3, f32>),
 }
 
-
 impl Iterator for Shape3dPointsIterator {
-    // ...
+    type Item = Vec3;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match self {
+            Shape2dPointsIterator::Point(iter) => iter.next(),
+            Shape2dPointsIterator::Line(iter) => iter.next(),
+            Shape2dPointsIterator::Grid(iter) => iter.next(),
+        }
+    }
 }
 ```
 
----
-
-### LED Grids
-
-<img src="/media/layout-2d-points.svg" />
-
-<!--
-
-Zig zag
-
--->
-
----
-
-### Using `Layout3d`
+<style>
+    code {
+        @apply text-lg leading-none;
+    }
+</style>
 
 ---
 layout: outline
@@ -750,6 +779,14 @@ A pattern, most similar to a WLED effect, generates colors for each LED based on
 -->
 
 ---
+layout: fact
+---
+
+### Animation patterns
+
+fn tick(time) -> A color for every LED
+
+---
 
 ### `Pattern` trait
 
@@ -767,6 +804,12 @@ where
 }
 ```
 
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
 <!--
 
 - Works for 1D, 2D, and 3D
@@ -779,17 +822,6 @@ where
 ### `Dim` and `LayoutForDim`?
 
 ```rust
-pub trait Pattern<Dim, Layout>
-where
-  Layout: LayoutForDim<Dim>,
-{
-    // ...
-}
-```
-
-And
-
-```rust
 impl<Layout: Layout1d> Pattern<Dim1d, Layout> for MyPattern {
     // ...
 }
@@ -798,14 +830,20 @@ impl<Layout: Layout1d> Pattern<Dim1d, Layout> for MyPattern {
 Because you can't:
 
 ```rust
-impl<Layout: Layout1d> Pattern<Layout> {
+impl<Layout: Layout1d> Pattern<Layout> for MyPattern {
     // ...
 }
 
-impl<Layout: Layout2d> Pattern<Layout> {
+impl<Layout: Layout2d> Pattern<Layout> for MyPattern {
     // ...
 }
 ```
+
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
 
 <!--
 
@@ -820,17 +858,20 @@ Then, we have a trait `LayoutForDim`, which constrains the Layout to match the D
 -->
 
 ---
+layout: fact
+---
 
 ### Noise functions
 
 (x, y, z, w) -> random number
+
+<img alt="Perlin noise" src="/media/perlin-noise.png" class="h-72" />
 
 <!--
 
 Noise functions are random generators that are given a point and that smoothly interpolate over nearby points.
 
 -->
-
 
 ---
 

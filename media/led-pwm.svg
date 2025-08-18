@@ -62,7 +62,7 @@
   </g>
 
   <!-- Title -->
-  <text x="300" y="30" class="title">LED PWM (Pulse-Width Modulation)</text>
+  <!--<text x="300" y="30" class="title">LED PWM (Pulse-Width Modulation)</text>-->
 
 
   <text x="35" y="40" class="axis-text">Duty cycle</text>
@@ -100,11 +100,11 @@
 
   <!-- High/Low indicators -->
   <g class="state-indicators">
-    <text x="90" y="70" class="state-indicator">HIGH</text>
-    <text x="90" y="110" class="state-indicator">LOW</text>
-    <text x="90" y="160" class="state-indicator">HIGH</text>
-    <text x="90" y="200" class="state-indicator">LOW</text>
-    <text x="90" y="250" class="state-indicator">HIGH</text>
-    <text x="90" y="290" class="state-indicator">LOW</text>
+    <text x="90" y="70" class="state-indicator">ON</text>
+    <text x="90" y="110" class="state-indicator">OFF</text>
+    <text x="90" y="160" class="state-indicator">ON</text>
+    <text x="90" y="200" class="state-indicator">OFF</text>
+    <text x="90" y="250" class="state-indicator">ON</text>
+    <text x="90" y="290" class="state-indicator">OFF</text>
   </g>
 </svg>
