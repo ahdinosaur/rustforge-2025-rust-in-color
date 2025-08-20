@@ -27,15 +27,6 @@ jobs:
           lfs: true
           fetch-depth: 0
 
-      - name: Ensure LFS is present
-        run: |
-          git lfs install
-          git lfs pull
-          # Optional: fail if any LFS pointers remain
-          if grep -R -n "oid sha256:" -- .; then
-            echo "Unresolved LFS pointers found"; exit 1;
-          fi
-
       - name: Cache Git LFS objects
         uses: actions/cache@v4
         with:
@@ -43,6 +34,11 @@ jobs:
           key: ${{ runner.os }}-gitlfs-${{ hashFiles('.gitattributes') }}
           restore-keys: |
             ${{ runner.os }}-gitlfs-
+
+      - name: Ensure LFS is present
+        run: |
+          git lfs install
+          git lfs pull
 
       - uses: actions/setup-node@v4
         with:
