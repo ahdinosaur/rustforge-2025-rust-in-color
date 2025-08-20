@@ -1,4 +1,5 @@
 # https://sli.dev/guide/hosting
+# - with git-lfs checkout and caching added
 
 name: Deploy pages
 
@@ -19,9 +20,29 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout (with LFS)
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0
+
+      - name: Ensure LFS is present
+        run: |
+          git lfs install
+          git lfs pull
+          # Optional: fail if any LFS pointers remain
+          if grep -R -n "oid sha256:" -- .; then
+            echo "Unresolved LFS pointers found"; exit 1;
+          fi
+
+      - name: Cache Git LFS objects
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-gitlfs-${{ hashFiles('.gitattributes') }}
+          restore-keys: |
+            ${{ runner.os }}-gitlfs-
 
       - uses: actions/setup-node@v4
         with:
@@ -34,12 +55,13 @@ jobs:
         run: nci
 
       - name: Build
-        run: nr build --base /${{github.event.repository.name}}/
+        run: nr build --base "/${{ github.event.repository.name }}/"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
