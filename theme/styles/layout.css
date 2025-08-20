@@ -118,6 +118,7 @@
 
   img, video {
     @apply flex-1;
+    object-fit: contain;
   }
 }
 

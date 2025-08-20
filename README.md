@@ -1,10 +1,35 @@
-# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
+# Rust Forge 2025
+
+https://rustforgeconf.com/talks
+
+## 3 Sentence Description
+
+LEDs + Rust = <3. Join me in how I made an LED cube with embedded (no-std & no-alloc) Rust. What do you want to make with LEDs and Rust?
+
+## Description
+
+LEDs + Rust = <3
+
+Join me in how I made an LED cube with embedded (no-std & no-alloc) Rust.
+
+Rust empowers us to think at a high-level for low-level systems:
+
+- Define LED layouts as geometric shapes like lines, grids, etc
+- Write patterns like graphics shaders: compute colors for each LED based on position and other data
+- Drive any any LED chipset, use traits as powerful abstractions
+- All without any standard library or heap allocations
+
+What do you want to make with LEDs and Rust?
+
+<https://blinksy.dev>
+
+## Developing
 
 To start the slide show:
 
 - `pnpm install`
 - `pnpm dev`
-- visit <http://localhost:3030>
+- Visit <http://localhost:3030>
 
 Edit the [slides.md](./slides.md) to see the changes.
 

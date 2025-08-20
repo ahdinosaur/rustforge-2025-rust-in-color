@@ -157,7 +157,7 @@ layout: big-center
 
 <!--
 
-Since we're here for Rust, here's how to use LEDs plus Rust to make magic.
+Since we're here for Rust, let's learn how to use LEDs plus Rust to make magic.
 
 -->
 
@@ -397,9 +397,7 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 ---
 
-### Impl Clockless with RMT
-
-???
+### RMT: Remote Control Transceiver
 
 <img src="/media/esp32-rmt.png" />
 
@@ -408,6 +406,46 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 The board I'm using, the ESP32, has a peripheral for infrared transceivers (like a TV remote), however it can be used for transmitting any type of signal as pulses.
 
 -->
+
+---
+
+### RMT: Remote Control Transceiver (Part 2)
+
+```rust
+let t_0h = ((Led::T_0H.to_nanos() * freq_mhz) / 1_000) as u16;
+let t_0l = ((Led::T_0L.to_nanos() * freq_mhz) / 1_000) as u16;
+let t_1h = ((Led::T_1H.to_nanos() * freq_mhz) / 1_000) as u16;
+let t_1l = ((Led::T_1L.to_nanos() * freq_mhz) / 1_000) as u16;
+let t_reset = ((Led::T_RESET.to_nanos() * freq_mhz) / 1_000) as u16;
+
+let pulses = (
+    PulseCode::new(Level::High, t_0h, Level::Low, t_0l),
+    PulseCode::new(Level::High, t_1h, Level::Low, t_1l),
+    PulseCode::new(Level::Low, t_reset, Level::Low, 0),
+);
+```
+
+---
+
+### RMT: Remote Control Transceiver (Part 3)
+
+```rust
+fn write_color_byte_to_rmt(
+    byte: &u8,
+    rmt_iter: &mut IterMut<u32>,
+    pulses: &(u32, u32, u32),
+) -> Result<(), ClocklessRmtDriverError> {
+    for bit_position in [128, 64, 32, 16, 8, 4, 2, 1] {
+        *rmt_iter
+            .next()
+            .ok_or(ClocklessRmtDriverError::BufferSizeExceeded)? = match byte & bit_position {
+            0 => pulses.0,
+            _ => pulses.1,
+        }
+    }
+    Ok(())
+}
+```
 
 ---
 layout: big-center
@@ -586,19 +624,37 @@ While this still looks good, it's missing the same spatial feel, each strut more
 
 ---
 
-### Counter-example: Cubes with WLED
+### Counter-example: WLED Cube
+
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/wled-cube.mp4" type="video/webm">
+</video>
+
+<img src="/media/wled-cube-mapping.jpg" class="max-h-25 mt-2" />
+
+<!--
+
+Source: [github.com/hpsaturn/cube_led_8x8x6_ws2812](https://github.com/hpsaturn/cube_led_8x8x6_ws2812)
+
+-->
 
 ---
 
 ### Counter-example: DIY Vegas sphere
 
+<img src="/media/led-sphere.jpg" class="h-0" />
+
 <!--
 
-- Wrapping a matrix around a sphere bunches pixels at poles
-- That’s only a problem if you must map a 2D raster
-- 3D-native patterns avoid uneven sampling artifacts
+I found a great YouTube video of someone making a DIY Vegas Sphere.
 
-Even in the best mappings, these are still 2D screens wrapped around a 3D surface, which means limitations.
+- In the video, they have a section on why they couldn't do the type of LED sphere on the right.
+  - Because the pixels at the poles are separated by a different distance than pixels at the equator
+- They say they need their pixels to be equidistant, and they did a great job making that happen.
+- But this is only a problem because they want to project a 2D image or video onto their 3D surface.
+- What if we did our animations in code, so it didn't matter where the pixels were?
+
+Source: https://youtu.be/_ZtewjbFXoA
 
 -->
 
@@ -949,6 +1005,14 @@ loop {
 }
 ```
 
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
+---
+
 ### `Control` is out of control
 
 ```rust
@@ -972,6 +1036,14 @@ where
 }
 ```
 
+<style>
+    code {
+        @apply text-lg leading-[1.25];
+    }
+</style>
+
+---
+
 ### Enter `ControlBuilder`
 
 We use a `ControlBuilder` to build a `Control`.
@@ -991,7 +1063,15 @@ pub struct ControlBuilder<Dim, Layout, Pattern, Driver> {
 }
 ```
 
-### Impl for unit type: the first step
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
+---
+
+### First step: Impl for unit type
 
 ```rust
 impl ControlBuilder<(), (), (), ()> {
@@ -1011,9 +1091,23 @@ impl ControlBuilder<(), (), (), ()> {
 }
 ```
 
+<!--
+
+By the way, shout-out to Hanno Braun who's working on Fornjot, a CAD kernel in Rust, for this pattern in a stepper motor library.
+
+-->
+
+
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
+
 ---
 
-### For each step, impl for generics
+### Next: impl for generics
 
 ```rust
 
@@ -1043,7 +1137,7 @@ impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
 
 ---
 
-### At the end we have it made
+### At the end we build
 
 ```rust
 impl<Dim, Layout, Pattern, Driver> ControlBuilder<Dim, Layout, Pattern, Driver>
@@ -1079,9 +1173,9 @@ layout: outline
 
 ---
 
-### Blinksy
+### Introducing: Blinksy
 
-A Rust LED library with everything and more:
+A Rust LED library for everything (and more):
 
 <https://blinksy.dev>
 
@@ -1097,20 +1191,24 @@ I hope to help people make art with LEDs.
 
 ### Desktop simulation
 
-Blinksy also has a way to simulate on your desktop: `blinksy-desktop`.
+Blinksy also has a way to simulate on your desktop.
+
+TODO
 
 ---
 
 ### Quickstart project
 
-<https://github.com/ahdinosaur/blinksy-quickstart-gledopto>
+<https://blinksy.dev/quickstart>
+
+TODO https://github.com/ahdinosaur/blinksy-quickstart-gledopto>
 
 <!--
 
 If you wanna start now, I made a quickstart project.
 
-- Allows you to write code and run on both desktop and microcontroller.
-- Uses Gledopto microcontroller, an affordable device on AliExpress
+- Setup so you write code to run on both desktop and micro-controller.
+- Uses Gledopto micro-controller, an affordable device on AliExpress
 
 -->
 

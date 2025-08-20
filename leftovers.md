@@ -4,7 +4,15 @@ BELOW IS LEFTOVERS
 
 ---
 
+Old 3 sentence description:
 
+> Blinksy is a Rust library for controlling LEDs in 1D, 2D, and 3D spatial layouts, designed for embedded systems (no-std & no-alloc). You model your LED setups as geometric shapes and create patterns that compute colors based on position and other parameters. This talk will share my creative journey with LEDs and how Rust can enable your journey too.
+
+Old description:
+
+>  Blinksy is a no-std, no-alloc Rust library for LED control, inspired by FastLED and WLED. It supports 1D, 2D, and 3D, allowing developers to define LED layouts as geometric shapes like lines, grids, arcs, and points. Patterns are written like shaders, computing colors for each LED based on position and other data. Blinksy supports multiple chipsets (APA102, WS2812B) and can be run on off-the-shelf embedded LED controllers.
+>
+> In this talk, I’ll share how Blinksy evolved from my LED projects, including a 3D tetrahedron modeled in Rust and an LED tensegrity structure powered by WLED. I’ll demonstrate the ins and outs of LEDs, and show how anyone can use Rust to build their own LED art.
 
 ---
 
