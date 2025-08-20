@@ -49,7 +49,7 @@ Embedded LED Art 🌈
 > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
 <div class="flex flex-col items-center justify-center mt-6">
-  <img src="" class="w-65 h-65" />
+  <img src="/media/blinksy.gif" class="w-65 h-65" />
 </div>
 
 <div class="absolute bottom-6">
@@ -1191,9 +1191,15 @@ I hope to help people make art with LEDs.
 
 ### Desktop simulation
 
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/cube-desktop.webm" type="video/webm">
+</video>
+
+<!--
+
 Blinksy also has a way to simulate on your desktop.
 
-TODO
+-->
 
 ---
 
