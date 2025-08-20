@@ -1,4 +1,6 @@
-# Rust Forge 2025
+# Rust in Color: Embedded LED Art
+
+@ [Rust Forge 2025](https://rustforgeconf.com)
 
 https://rustforgeconf.com/talks
 
