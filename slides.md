@@ -189,7 +189,7 @@ WLED is off-the-shelf software for LED projects.
 layout: big-center
 ---
 
-## LEDs + Rust = <3
+## LEDs + Rust = 💜
 
 <!--
 
@@ -1090,6 +1090,8 @@ layout: big-center
 
 Noise functions are random generators that given a point, returns a random sample that smoothly interpolate over nearby points.
 
+They are commonly used in procedural generated terrains.
+
 We're going to use noise functions to generate colors.
 
 -->
@@ -1150,32 +1152,15 @@ layout: outline
 4. **Control**: How to put these together
 5. Quickstart: How to start an LED project now
 
----
+<!--
 
-### Back to the final code
+We have the building blocks, how do we put this all together?
 
-```rust
-let mut control = ControlBuilder::new_3d()
-    .with_layout::<CubeLayout>()
-    .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
-    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
-    .build();
-
-loop {
-    let time = elapsed().as_millis();
-    control.tick(time).unwrap();
-}
-```
-
-<style>
-    code {
-        @apply text-xl;
-    }
-</style>
+-->
 
 ---
 
-### `Control` is out of control
+### A struct to bind them: `Control`
 
 ```rust
 struct Control<Dim, Layout, Pattern, Driver> {
@@ -1185,24 +1170,43 @@ struct Control<Dim, Layout, Pattern, Driver> {
     driver: Driver,
     brightness: f32,
 }
+```
 
+<style>
+  code {
+    @apply text-2xl;
+  }
+</style>
 
-impl<Dim, Layout, Pattern, Driver> Control<Dim, Layout, Pattern, Driver>
-where
-    Driver: DriverTrait,
-    Driver::Color: FromColor<Pattern::Color>,
-    Layout: LayoutForDim<Dim>,
-    Pattern: PatternTrait<Dim, Layout>,
-{
-    // fn tick ...
-}
+---
+
+### `Control` is out of control
+
+```rust
+let control: Control<
+    Dim3d,
+    CubeLayout,
+    Noise3d<noise_fns::Perlin>,
+    _
+> = Control::new(
+    NoiseParams::default(),
+    ws2812!(p, Layout::PIXEL_COUNT)
+);
 ```
 
 <style>
     code {
-        @apply text-lg leading-[1.25];
+        @apply text-2xl;
     }
 </style>
+
+<!--
+
+To create `Control`, some things are types, some things are values.
+
+Type arguments and value arguments aren't named, it's confusing
+
+-->
 
 ---
 
@@ -1210,7 +1214,7 @@ where
 
 We use a `ControlBuilder` to build a `Control`.
 
-How do we manage the type madness?
+We use some clever Rust to combine what we need: types and values.
 
 ---
 
@@ -1237,11 +1241,6 @@ pub struct ControlBuilder<Dim, Layout, Pattern, Driver> {
 
 ```rust
 impl ControlBuilder<(), (), (), ()> {
-    /// Starts building a three-dimensional control system.
-    ///
-    /// # Returns
-    ///
-    /// A builder initialized for 3D
     pub fn new_3d() -> ControlBuilder<Dim3d, (), (), ()> {
         ControlBuilder {
             dim: PhantomData,
@@ -1253,36 +1252,24 @@ impl ControlBuilder<(), (), (), ()> {
 }
 ```
 
-<!--
-
-By the way, shout-out to Hanno Braun who's working on Fornjot, a CAD kernel in Rust, for this pattern in a stepper motor library.
-
--->
-
-
 <style>
     code {
         @apply text-xl;
     }
 </style>
 
+<!--
+
+By the way, shout-out to Hanno Braun who's working on Fornjot, a CAD kernel in Rust, for this pattern in a stepper motor library.
+
+-->
 
 ---
 
 ### Next: impl for generics
 
 ```rust
-
 impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
-    /// Specifies the LED driver for the control system.
-    ///
-    /// # Arguments
-    ///
-    /// * `driver` - The LED driver instance
-    ///
-    /// # Returns
-    ///
-    /// Builder with driver specified
     pub fn with_driver<Driver>(self, driver: Driver) -> ControlBuilder<Dim, Layout, Pattern, Driver>
     where
         Driver: DriverTrait,
@@ -1297,6 +1284,12 @@ impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
 }
 ```
 
+<style>
+    code {
+        @apply text-md;
+    }
+</style>
+
 ---
 
 ### At the end we build
@@ -1309,16 +1302,47 @@ where
     Driver: DriverTrait,
     Driver::Color: FromColor<Pattern::Color>,
 {
-    /// Builds the final [`Control`] struct.
-    ///
-    /// # Returns
-    ///
-    /// A fully configured Control instance
     pub fn build(self) -> Control<Dim, Layout, Pattern, Driver> {
         Control::new(self.pattern, self.driver)
     }
 }
 ```
+
+<style>
+    code {
+        @apply text-lg;
+    }
+</style>
+
+---
+
+### Back to the final code
+
+```rust
+let mut control = ControlBuilder::new_3d()
+    .with_layout::<CubeLayout>()
+    .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
+    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
+    .build();
+
+loop {
+    let time = elapsed().as_millis();
+    control.tick(time).unwrap();
+}
+```
+
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
+<!--
+
+This is the code we saw at the beginning, now maybe things make slightly more sense.
+
+-->
+
 
 ---
 layout: outline
@@ -1381,12 +1405,6 @@ If you wanna start now, I made a quickstart project.
 -->
 
 ---
-
-## Come play with me
-
-Find me, in person or online, I'm happy to help!
-
----
 layout: center
 ---
 
@@ -1395,3 +1413,9 @@ layout: center
 Blinksy: <https://blinksy.dev>
 
 Me: <https://mikey.nz>
+
+<!--
+
+Find me, in person or online, I'm happy to help!
+
+-->

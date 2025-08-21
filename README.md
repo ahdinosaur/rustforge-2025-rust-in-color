@@ -6,11 +6,11 @@ https://rustforgeconf.com/talks
 
 ## 3 Sentence Description
 
-LEDs + Rust = <3. Join me in how I made an LED cube with embedded (no-std & no-alloc) Rust. What do you want to make with LEDs and Rust?
+LEDs + Rust = 💜. Join me in how I made an LED cube with embedded Rust. What would you make with LEDs and Rust?
 
 ## Description
 
-LEDs + Rust = <3
+LEDs + Rust = 💜
 
 Join me in how I made an LED cube with embedded (no-std & no-alloc) Rust.
 
