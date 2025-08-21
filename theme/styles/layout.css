@@ -126,6 +126,10 @@
   @apply h-full v-full flex flex-col justify-start;
 }
 
+.slidev-layout.center {
+  @apply h-full v-full flex flex-col justify-center items-center;
+}
+
 .slidev-layout.intro-image,
 .slidev-layout.intro {
   @apply h-full;
@@ -150,22 +154,9 @@
   h1,h2,h3 {
     @apply text-6xl font-700;
   }
-  h1,h2,h3 + p {
+
+  p {
     @apply text-4xl font-700;
-  }
-}
-
-.slidev-layout.quote {
-  h1 + p {
-    @apply mt-6 ml-6;
-    color: var(--ctp-subtext1);
-  }
-}
-
-.slidev-layout.section {
-  h1 {
-    @apply text-6xl font-500 leading-20;
-    color: var(--ctp-green);
   }
 }
 

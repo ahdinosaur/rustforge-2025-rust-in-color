@@ -81,3 +81,33 @@ where
     Ok(())
 }
 ```
+
+---
+
+
+### `shape.pixel_count()`
+
+```rust
+impl Shape3d {
+    /// Returns the total number of pixels (LEDs) in this shape.
+    pub const fn pixel_count(&self) -> usize {
+        match *self {
+            Shape3d::Point(_) => 1,
+            Shape3d::Line { pixel_count, .. } => pixel_count,
+            Shape3d::Grid {
+                horizontal_pixel_count,
+                vertical_pixel_count,
+                ..
+            } => horizontal_pixel_count * vertical_pixel_count,
+            Shape3d::Arc { pixel_count, .. } => pixel_count,
+        }
+    }
+```
+
+<style>
+    code {
+        @apply text-lg;
+    }
+</style>
+
+---

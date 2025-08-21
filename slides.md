@@ -32,7 +32,6 @@ mdc: true
 #  ogImage: https://cover.sli.dev
 
 layout: intro-image-right
-image: /media/blinksy.gif
 ---
 
 <h1>
@@ -48,10 +47,6 @@ Embedded LED Art 🌈
 
 > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
 
-<div class="flex flex-col items-center justify-center mt-6">
-  <img src="/media/blinksy.gif" class="w-65 h-65" />
-</div>
-
 <div class="absolute bottom-6">
   <span class="font-700">
     mikey.nz ( @ahdinosaur)
@@ -64,16 +59,47 @@ Embedded LED Art 🌈
   </a>
 </div>
 
+::image::
 
+<div class="h-full w-full flex flex-col items-center justify-center">
+  <img src="/media/blinksy.gif" />
+</div>
+
+<!--
+
+Hi hello!
+
+I'm going to talk about how to use embedded Rust to make LED art.
+
+-->
+
+---
+layout: intro-image-right
 ---
 
 ## Hi I’m Mikey
 
-I am Mikey, aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz).
+(aka **@ahdinosaur**, aka [mikey.nz](https://mikey.nz))
 
 - Node.js + Rust developer
-- Based in Aotearoa New Zealand
-- Cares about creative tech and community
+- Based in Pōneke (Wellington), Aotearoa (New Zealand)
+- Care about creative tech and community
+
+::image::
+
+<div class="h-full w-full flex flex-col items-center justify-cente">
+  <img src="/media/worm-family.jpg" class="w-3/4" />
+</div>
+
+<!--
+
+I'm Mikey
+
+- Previously a Node.js developer,
+- A based here in Wellington,
+- And I like making cool art amongst friends.
+
+-->
 
 ---
 layout: center
@@ -87,7 +113,7 @@ layout: center
 
 <!--
 
-I'm going to show you how.
+So I made this LED cube, and I'm going to show you how.
 
 -->
 
@@ -99,7 +125,9 @@ layout: big-center
 
 <!--
 
-Not sure why, LEDs tickle my brain in a great way.
+So you might have guessed I like LEDs.
+
+Not sure why, LEDs seem to tickle my brain in a great way.
 
 -->
 
@@ -112,6 +140,12 @@ layout: center
 <video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-suspenders.mp4" type="video/mp4">
 </video>
+
+<!--
+
+This was a project for the Big Burning Man, using FastLED on an Arduino in C++.
+
+-->
 
 ---
 layout: center
@@ -129,7 +163,7 @@ This was early days for me and Rust.
 
 In this project I came to my realization: each LED pixel should have a position in 3d space.
 
-We use this position in 3d space to compute the color for each animation frame.
+More on that later.
 
 -->
 
@@ -145,6 +179,8 @@ layout: center
 
 <!--
 
+This was my next installation, a Buckminster Fuller inspired tensegrity, using WLED.
+
 WLED is off-the-shelf software for LED projects.
 
 -->
@@ -157,7 +193,7 @@ layout: big-center
 
 <!--
 
-Since we're here for Rust, let's learn how to use LEDs plus Rust to make magic.
+So we're here for Rust, let's learn how to use LEDs plus Rust to make magic.
 
 -->
 
@@ -173,8 +209,8 @@ let mut control = ControlBuilder::new_3d()
     .build();
 
 loop {
-    let elapsed_in_ms = elapsed().as_millis();
-    control.tick(elapsed_in_ms).unwrap();
+    let time = elapsed().as_millis();
+    control.tick(time).unwrap();
 }
 ```
 
@@ -183,6 +219,24 @@ loop {
         @apply text-xl;
     }
 </style>
+
+<!--
+
+We'll start with the final code.
+
+We make an LED controller:
+
+- We say it's 3d
+- We say it has a layout of CubeLayout
+- We say it has a pattern of Noise, with Perlin as noise function
+- We say it has a driver of ws2812
+
+Then we loop and call `control.tick`, passing in the current time.
+
+This talk will attempt to explain all of this as best as I can.
+
+-->
+
 
 ---
 layout: outline
@@ -199,7 +253,13 @@ layout: outline
 
 <!--
 
-Let's start with the smallest building block, the LED, and build up from there.
+So here's the structure of the talk.
+
+We'll start with LEDs, how to tell LEDs what to do, how our eyes perceive what they do.
+
+Then we'll go into spatial layouts and animating these spaces.
+
+Finally we'll put the building blocks together and show how to start an LED project now.
 
 -->
 
@@ -216,23 +276,9 @@ layout: outline
 4. Control: How to put these together
 5. Quickstart: How to start an LED project now
 
----
-layout: big-center
----
-
-### Let's start with LED basics
-
----
-layout: big-center
----
-
-### What are LEDs
-
-LED = Light-emitting diode
-
 <!--
 
-Black magic where a tiny surface emits light.
+So our first section is all about LEDs and how to drive them.
 
 -->
 
@@ -242,15 +288,42 @@ layout: big-center
 
 ### What are RGB LEDs
 
-RGB = Red + Green + Blue
+LED = Light-emitting diode
+
+<span class="color-ctp-red">R</span>
+<span class="color-ctp-green">G</span>
+<span class="color-ctp-blue">B</span> = <span class="color-ctp-red">Red</span> +
+<span class="color-ctp-green">Green</span> +
+<span class="color-ctp-blue">Blue</span>
 
 <img alt="NeoPixel close-up" src="/media/neopixel-closeup.webp" class="mt-3 h-0" />
 
 <!--
 
-3 LEDs next to each other.
+Let's start with the basics, what are LEDs anyways.
 
-We use red, green, and blue because those most closely match our 3 photo-receptors in our eyes, more on that later.
+Honestly, they are black magic: a tiny rock we trick to emit light.
+
+RGB is 3 tiny LEDs next to each other.
+
+-->
+
+---
+layout: big-center
+---
+
+### Why RGB?
+
+
+<img alt="Human eye cones" src="/media/human-eye-cones.svg" />
+
+<!--
+
+Why red, green, and blue?
+
+We have 3 photo-receptors in our eyes, guess what colors they most closely line up with.
+
+That means we don't actually see colors as we might think, we don't see the whole rainbow of wavelengths, we just see combinations of these 3 photo-receptors.
 
 -->
 
@@ -258,9 +331,9 @@ We use red, green, and blue because those most closely match our 3 photo-recepto
 
 ### What are addressable LEDs?
 
-- You talk to the first LED, it will talk to the next LED.
+- You talk to the first LED, it talks to the next LED.
 - Like filling a bucket, that overflows to the next bucket.
-- So you must provide a color to every LED on every frame
+- On every frame, you must provide a color to every LED.
 
 <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; height: 20%;">
   <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
@@ -269,15 +342,25 @@ We use red, green, and blue because those most closely match our 3 photo-recepto
   <img alt="WS2812 LED strip unit" src="/media/led-strip-unit.svg" style="height: 100%;" />
 </div>
 
+<!--
+
+This is a common form of LEDs where they are sequenced, for example in a strip.
+
+- You talk to the first LED, it will talk to the next LED.
+- Like filling a bucket, that overflows to the next bucket.
+- On every frame, you must provide a color to every LED.
+
+-->
+
 ---
 
 ### Basic LED `Driver` trait
 
 ```rust
 pub struct Rgb {
-    red: u8,
-    green: u8,
-    blue: u8,
+    red: f32,
+    green: f32,
+    blue: f32,
 }
 
 pub trait Driver {
@@ -297,7 +380,15 @@ pub trait Driver {
 
 <!--
 
-We'll start with a basic `Driver` trait, similar to `smart-leds` crate.
+Now to represent an LED driver in code.
+
+We make an Rgb struct to represent a color.
+
+We have a `Driver` trait:
+
+- The implementor provides an associated type for `Error`
+- We have a `write` function, which is given an iterator of Rgb colors
+  - See the generic `I`, which must implement `IntoIterator<Item = Rgb>`
 
 We use an iterator to avoid heap allocations and minimize the memory usage.
 
@@ -314,14 +405,14 @@ We use an iterator to avoid heap allocations and minimize the memory usage.
 
 <!--
 
-A clocked protocol is based on SPI, where chipsets have a data line and a clock line.
+We'll start with "Clocked" LEDs, where we talk to them over two wires: a data line and a clock line.
 
-For every bit we want to send from the controller to the LEDs:
+The LED waits until the clock line goes up, then reads the data line.
 
-- First the controller sets the data line (MOSI) to HIGH for a 1 or LOW for a 0.
-- Then the controller “ticks” the clock line (SCLK), by going from LOW to HIGH.
-- On the rising edge of the clock line, the LED will read the data line.
-- Halfway through the clock cycle, the controller will reset the clock line to LOW.
+So to send a bit to an LED, you set the data line to what you want, then raise and lower the clock line.
+
+As the sender, you control the clock speed, which will become the frame rate.
+
 
 -->
 
@@ -336,14 +427,18 @@ For every bit we want to send from the controller to the LEDs:
 
 <!--
 
-We'll be focusing on "Clockless" LEDs, as that's what I'm using for the cube.
+Then LED manufacturers realized they could make things cheaper by removing the clock line.
 
-For example with WS2812B LEDs, to represent a 0 bit the data line must be HIGH for 0.4 µs, then LOW for 0.85 µs. These timings must be accurate to within 150 ns. That's tiny!
+So on "Clockless" LEDs, there's only one wire: a data line.
 
-Example timing (WS2812B):
+To send a bit is to send highs and lows of specific timings.
+
+For example on the WS2812,
 
 - 0-bit: HIGH ~0.4µs, then LOW ~0.85µs
 - 1-bit: HIGH ~0.8µs, then LOW ~0.45µs
+
+These timings must be accurate to within 150 ns. That's tiny!
 
 -->
 
@@ -356,42 +451,51 @@ Example timing (WS2812B):
 
 <img alt="Clockless transmission" src="/media/clockless-transmission.svg" class="mt-5" />
 
+<!--
+
+Then to send many bits, you just repeat the process.
+
+-->
+
 ---
 
-### Trait to describe a "Clockless" chipset
+### Trait to describe a "Clockless" LED
 
 ```rust
 pub trait ClocklessLed {
-    /// Duration of high signal for transmitting a '0' bit.
     const T_0H: Nanoseconds;
-
-    /// Duration of low signal for transmitting a '0' bit.
     const T_0L: Nanoseconds;
-
-    /// Duration of high signal for transmitting a '1' bit.
     const T_1H: Nanoseconds;
-
-    /// Duration of low signal for transmitting a '1' bit.
     const T_1L: Nanoseconds;
-
-    /// Duration of the reset period at the end of a transmission.
-    ///
-    /// This low signal period marks the end of a data frame and allows the LEDs
-    /// to latch the received data and update their output.
-    const T_RESET: Nanoseconds;
-
-    /// Specification of the color channel order and format.
-    ///
-    /// Different LED chipsets may expect data in different channel orders (e.g., RGB, GRB, RGBW).
-    const LED_CHANNELS: LedChannels;
 }
 ```
 
+```rust
+struct Ws2812Led;
+
+impl ClocklessLed for Ws2812Led {
+    const T_0H: Nanoseconds = Nanoseconds::nanos(400);
+    const T_0L: Nanoseconds = Nanoseconds::nanos(850);
+    const T_1H: Nanoseconds = Nanoseconds::nanos(800);
+    const T_1L: Nanoseconds = Nanoseconds::nanos(450);
+}
+```
+
+<style>
+    code {
+        @apply text-xl;
+    }
+</style>
+
 <!--
 
-Since we want to support all possible "Clockless" LED chipsets, we can represent the timings for a particular chipset as a trait.
+Since every "Clockless" LED will have slightly different timings, but the overall pattern is the same:
 
-Then, we can implement a driver using the timing trait as an argument (a generic type).
+We can use a `ClocklessLed` trait to represent the pattern.
+
+Each particular LED implements the trait with their timings.
+
+Then, we can implement a driver for all types that implement the `ClocklessLed` trait.
 
 -->
 
@@ -403,6 +507,8 @@ Then, we can implement a driver using the timing trait as an argument (a generic
 
 <!--
 
+How do we get nanosecond-precision?
+
 The board I'm using, the ESP32, has a peripheral for infrared transceivers (like a TV remote), however it can be used for transmitting any type of signal as pulses.
 
 -->
@@ -412,18 +518,28 @@ The board I'm using, the ESP32, has a peripheral for infrared transceivers (like
 ### RMT: Remote Control Transceiver (Part 2)
 
 ```rust
-let t_0h = ((Led::T_0H.to_nanos() * freq_mhz) / 1_000) as u16;
-let t_0l = ((Led::T_0L.to_nanos() * freq_mhz) / 1_000) as u16;
-let t_1h = ((Led::T_1H.to_nanos() * freq_mhz) / 1_000) as u16;
-let t_1l = ((Led::T_1L.to_nanos() * freq_mhz) / 1_000) as u16;
-let t_reset = ((Led::T_RESET.to_nanos() * freq_mhz) / 1_000) as u16;
+let t_0h = ((Led::T_0H.to_nanos() * freq_mhz) / 1_000) as u16; // 32 cycles
+let t_0l = ((Led::T_0L.to_nanos() * freq_mhz) / 1_000) as u16; // 68 cycles
+let t_1h = ((Led::T_1H.to_nanos() * freq_mhz) / 1_000) as u16; // 64 cycles
+let t_1l = ((Led::T_1L.to_nanos() * freq_mhz) / 1_000) as u16; // 36 cycles
 
 let pulses = (
     PulseCode::new(Level::High, t_0h, Level::Low, t_0l),
     PulseCode::new(Level::High, t_1h, Level::Low, t_1l),
-    PulseCode::new(Level::Low, t_reset, Level::Low, 0),
 );
 ```
+
+<style>
+    code {
+        @apply text-lg;
+    }
+</style>
+
+<!--
+
+
+-->
+
 
 ---
 
@@ -433,12 +549,13 @@ let pulses = (
 fn write_color_byte_to_rmt(
     byte: &u8,
     rmt_iter: &mut IterMut<u32>,
-    pulses: &(u32, u32, u32),
+    pulses: &(u32, u32),
 ) -> Result<(), ClocklessRmtDriverError> {
     for bit_position in [128, 64, 32, 16, 8, 4, 2, 1] {
-        *rmt_iter
+        let next = rmt_iter
             .next()
-            .ok_or(ClocklessRmtDriverError::BufferSizeExceeded)? = match byte & bit_position {
+            .ok_or(ClocklessRmtDriverError::BufferSizeExceeded)?;
+        *next = match byte & bit_position {
             0 => pulses.0,
             _ => pulses.1,
         }
@@ -446,6 +563,12 @@ fn write_color_byte_to_rmt(
     Ok(())
 }
 ```
+
+<style>
+    code {
+        @apply text-xl leading-[1.4];
+    }
+</style>
 
 ---
 layout: big-center
@@ -455,6 +578,12 @@ layout: big-center
 
 Colors are more complex than you might think.
 
+
+<!--
+
+So that's all well and good, but turns out colors are more complex than you might think.
+
+-->
 
 ---
 layout: outline
@@ -471,7 +600,7 @@ layout: outline
 
 <!--
 
-Versus what LEDs emit.
+So up next: how do our eyes perceive light, versus what LEDs emit.
 
 -->
 
@@ -484,6 +613,8 @@ An LED can only be **ON** or **OFF**
 <img alt="LED PWM (Pulse-Width Modulation)" src="/media/led-pwm.svg" />
 
 <!--
+
+An LED can only be full **ON** or full **OFF**, no such thing as being half-on.
 
 - If you tell an LED to be 100% bright, it will be on for 100% of the time (a 100% duty cycle).
 - If you tell an LED to be 50% bright, it will be on for 50% of the time (a 50% duty cycle).
@@ -507,9 +638,13 @@ What we perceive to a linear change in photons is not linear.
 
 For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
 
-This mismatch between physics and perception is why the “RGB” you think you know is actually gamma-encoded sRGB. sRGB allows us to think in terms of perception, where double the red value means double the perceived brightness of red. Then for LEDs, we convert the gamma-encoded sRGB to linear, to use as a gamma-corrected duty cycle.
+On the left we have uncorrected photons: a linear duty cycle has a non-linear perceived brightness.
 
-By the way, if you start mixing RGB's, make sure to do so in the linear space.
+On the right we have gamma corrected photons: a gamma-corrected duty cycle has a linear perceived brightness.
+
+The RGB we're used to is gamma-corrected, so double the red means double the perceived brightness of red.
+
+However, when talking to LEDs, we need to use the linear colors.
 
 -->
 
@@ -556,6 +691,7 @@ Now let's improve how our `Driver` handles colors, with respect to human percept
 
 Changes:
 
+- `Color` associated type
 - `FromColor` trait
 - brightness: f32
 
@@ -575,6 +711,12 @@ layout: outline
 4. Control: How to put these together
 5. Quickstart: How to start an LED project now
 
+<!--
+
+Okay, now time to lay these LEDs in space.
+
+-->
+
 ---
 
 ### Thinking in spaces rather than LEDs
@@ -585,13 +727,21 @@ But what if instead, every pixel had a position in space?
 
 <!--
 
-Think like graphics shaders.
+Most LED projects, that I'm aware of, think in terms arrays of pixels.
+
+This makes sense because images and videos are also arrays of pixels.
+
+I want to think like graphics shaders.
+
+What if every pixel had a position in space, which we'd use on every frame to calculate the color?
 
 -->
 
 ---
+layout: center
+---
 
-### Backstory: Tetrahedron using Rust
+### Prior art: Tetrahedron using Rust
 
 <video controls autoplay loop muted class="w-full h-full">
   <source src="/media/led-tetrahedron.mp4" type="video/mp4">
@@ -607,8 +757,10 @@ Each pixel has a position in 3D space. Similar to a graphics shader, for every f
 
 
 ---
+layout: center
+---
 
-### Backstory: Tensegrity using WLED
+### Prior art: Tensegrity using WLED
 
 <video controls autoplay loop muted class="w-full h-full">
   <source src="/media/led-tensegrity.mp4" type="video/mp4">
@@ -622,6 +774,8 @@ While this still looks good, it's missing the same spatial feel, each strut more
 
 -->
 
+---
+layout: center
 ---
 
 ### Counter-example: WLED Cube
@@ -639,6 +793,8 @@ Source: [github.com/hpsaturn/cube_led_8x8x6_ws2812](https://github.com/hpsaturn/
 -->
 
 ---
+layout: center
+---
 
 ### Counter-example: DIY Vegas sphere
 
@@ -649,7 +805,7 @@ Source: [github.com/hpsaturn/cube_led_8x8x6_ws2812](https://github.com/hpsaturn/
 I found a great YouTube video of someone making a DIY Vegas Sphere.
 
 - In the video, they have a section on why they couldn't do the type of LED sphere on the right.
-  - Because the pixels at the poles are separated by a different distance than pixels at the equator
+  - Because the pixels at the poles are closer than the pixels at the equator
 - They say they need their pixels to be equidistant, and they did a great job making that happen.
 - But this is only a problem because they want to project a 2D image or video onto their 3D surface.
 - What if we did our animations in code, so it didn't matter where the pixels were?
@@ -660,7 +816,7 @@ Source: https://youtu.be/_ZtewjbFXoA
 
 ---
 
-### `Layout3d`
+### Layout in 3D
 
 Map 3D space `-1.0` → `1.0`
 
@@ -670,19 +826,29 @@ Map 3D space `-1.0` → `1.0`
 
 <!--
 
+We're going to map our 3D space from -1 to +1.
+
 Why -1.0 → 1.0? So 0.0 is the middle.
 
 -->
 
 ---
 
+<div class="text-center">
+
 ### LED Grids
+
+</div>
 
 <img src="/media/layout-2d-points.svg" />
 
 <!--
 
-Zig zag
+Here's an example of laying out an LED grid in 2D.
+
+Not only do we need to know where every pixel is, we need to know the order of every pixel.
+
+Notice the zig zag, that's how the LED grids are made, we need our code to understand that.
 
 -->
 
@@ -691,60 +857,36 @@ Zig zag
 
 ### `Shape3d`
 
-Create shapes of LEDs in that 3D space
-
 ```rust
-/// Enumeration of three-dimensional shape primitives.
 pub enum Shape3d {
-    /// A single LED at the specified location.
     Point(Vec3),
-
-    /// A line of LEDs from `start` to `end` with `pixel_count` LEDs.
     Line {
         // ...
     },
-
-    /// A grid of LEDs defined by three corners and dimensions.
     Grid {
         // ...
     },
-
     // ...
 }
 ```
 
 <style>
     code {
-        @apply text-lg leading-none;
+        @apply text-2xl;
     }
 </style>
 
----
+<!--
 
-### `shape.pixel_count()`
+We have an enum to represent our shapes of LEDs in our 3D space.
 
-```rust
-impl Shape3d {
-    /// Returns the total number of pixels (LEDs) in this shape.
-    pub const fn pixel_count(&self) -> usize {
-        match *self {
-            Shape3d::Point(_) => 1,
-            Shape3d::Line { pixel_count, .. } => pixel_count,
-            Shape3d::Grid {
-                horizontal_pixel_count,
-                vertical_pixel_count,
-                ..
-            } => horizontal_pixel_count * vertical_pixel_count,
-            Shape3d::Arc { pixel_count, .. } => pixel_count,
-        }
-    }
-```
+- Point
+- Line
+- Grid
 
-<style>
-    code {
-        @apply text-lg;
-    }
-</style>
+And so on...
+
+-->
 
 ---
 
@@ -778,7 +920,9 @@ How do we return a different iterator for each case, without allocations?
 
 If we can't return `Box<dyn Iterator>`, what do we do?
 
-Return a struct that `impl Iterator`, which wraps sub-iterators for each case.
+I had been learning to use enums a lot for cases when I would have done `Box<dyn>`.
+
+So I realized you could return an enum that `impl Iterator`, which wraps sub-iterators for each case.
 
 -->
 
@@ -801,10 +945,11 @@ impl Iterator for Shape3dPointsIterator {
     type Item = Vec3;
 
     fn next(&mut self) -> Option<Self::Item> {
+        use Shape3dPointsIterator::*;
         match self {
-            Shape2dPointsIterator::Point(iter) => iter.next(),
-            Shape2dPointsIterator::Line(iter) => iter.next(),
-            Shape2dPointsIterator::Grid(iter) => iter.next(),
+            Point(iter) => iter.next(),
+            Line(iter) => iter.next(),
+            Grid(iter) => iter.next(),
         }
     }
 }
@@ -831,7 +976,7 @@ layout: outline
 
 <!--
 
-A pattern, most similar to a WLED effect, generates colors for each LED based on time and position.
+Now we want to make our LEDs flash and dance.
 
 -->
 
@@ -842,6 +987,16 @@ layout: big-center
 ### Animation patterns
 
 fn tick(time) -> A color for every LED
+
+<!--
+
+Conceptually, an animation pattern is a function that:
+
+- is called on every frame
+- is given the time
+- and returns a color for every LED
+
+-->
 
 ---
 
@@ -869,8 +1024,15 @@ where
 
 <!--
 
-- Works for 1D, 2D, and 3D
-- Iterator output stays no-alloc
+We'll do this as a trait.
+
+Our trait has two generics, a dimension and a layout. More on that later.
+
+The implementor will provide us with two associated types: Params and Color.
+
+We'll have a constructor which is given the params and returns Self.
+
+And a tick function that is given the current time and returns an iterator of colors.
 
 -->
 
@@ -1000,8 +1162,8 @@ let mut control = ControlBuilder::new_3d()
     .build();
 
 loop {
-    let elapsed_in_ms = elapsed().as_millis();
-    control.tick(elapsed_in_ms).unwrap();
+    let time = elapsed().as_millis();
+    control.tick(time).unwrap();
 }
 ```
 
@@ -1181,9 +1343,9 @@ A Rust LED library for everything (and more):
 
 <!--
 
-Everything I've shown you, and more, is available as a Rust library called Blinksy.
+Everything I've shown you, and much more I didn't have time for, is available as a Rust library called Blinksy.
 
-I hope to help people make art with LEDs.
+I want to help people make art with LEDs.
 
 -->
 
