@@ -112,7 +112,7 @@
     <text x="-15" y="0" class="axis-marker-text" text-anchor="end">1.00</text>
 
     <!-- Curve texts -->
-    <text x="40" y="265" class="curve-text" transform="rotate(-45, 40, 265)">Perceived Brightness, Uncorrected</text>
-    <text x="110" y="325" class="curve-text" transform="rotate(-45, 110, 325)">Linear Duty Cycle</text>
+    <text x="40" y="265" class="curve-text" transform="rotate(-45, 40, 265)">Perceived Brightness</text>
+    <text x="110" y="325" class="curve-text" transform="rotate(-45, 110, 325)">Emitted Photons</text>
   </g>
 </svg>

@@ -9,7 +9,7 @@ info: |
 
   Beautiful art with LEDs:
 
-  > Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
+  > Using **Rust** to write nice code for an embedded _no-std_ _no-alloc_ LED cube.
 
   <https://blinksy.dev>
 
@@ -45,7 +45,7 @@ layout: intro-image-right
 
 Embedded LED Art 🌈
 
-> Using _no-std_ _no-alloc_ **Rust** to animate an LED cube
+> Using **Rust** to write nice code for an embedded _no-std_ _no-alloc_ LED cube.
 
 <div class="absolute bottom-6">
   <span class="font-700">
@@ -84,6 +84,7 @@ layout: intro-image-right
 - Node.js + Rust developer
 - Based in Pōneke (Wellington), Aotearoa (New Zealand)
 - Care about creative tech and community
+- Aspiring solarpunk
 
 ::image::
 
@@ -118,24 +119,10 @@ So I made this LED cube, and I'm going to show you how.
 -->
 
 ---
-layout: big-center
----
-
-### Backstory: I like LEDs
-
-<!--
-
-So you might have guessed I like LEDs.
-
-Not sure why, LEDs seem to tickle my brain in a great way.
-
--->
-
----
 layout: center
 ---
 
-### Prior art: LED suspenders using FastLED
+### Prior art: LED suspenders
 
 <video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-suspenders.mp4" type="video/mp4">
@@ -143,7 +130,7 @@ layout: center
 
 <!--
 
-This was a project for the Big Burning Man, using FastLED on an Arduino in C++.
+For the Big Burning Man
 
 -->
 
@@ -151,7 +138,7 @@ This was a project for the Big Burning Man, using FastLED on an Arduino in C++.
 layout: center
 ---
 
-### Prior art: Tetrahedron using Rust
+### Prior art: LED tetrahedron
 
 <video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-tetrahedron.mp4" type="video/mp4">
@@ -159,11 +146,7 @@ layout: center
 
 <!--
 
-This was early days for me and Rust.
-
-In this project I came to my realization: each LED pixel should have a position in 3d space.
-
-More on that later.
+For Kiwiburn
 
 -->
 
@@ -171,7 +154,7 @@ More on that later.
 layout: center
 ---
 
-### Prior art: Tensegrity using WLED
+### Prior art: LED tensegrity
 
 <video controls autoplay loop muted class="h-0 flex-1">
   <source src="/media/led-tensegrity.mp4" type="video/mp4">
@@ -179,9 +162,7 @@ layout: center
 
 <!--
 
-This was my next installation, a Buckminster Fuller inspired tensegrity, using WLED.
-
-WLED is off-the-shelf software for LED projects.
+This was my next installation, a Buckminster Fuller inspired tensegrity.
 
 -->
 
@@ -189,11 +170,21 @@ WLED is off-the-shelf software for LED projects.
 layout: big-center
 ---
 
-## LEDs + Rust = 💜
+## Rust + LEDs = 💜
+
+Use high-level abstractions for low-level systems.
+
+`no-std` & `no-alloc`? No problem.
 
 <!--
 
-So we're here for Rust, let's learn how to use LEDs plus Rust to make magic.
+Rust is amazing.
+
+With the power of abstraction, we can think at a very high-level, for very low-level applications.
+
+I will show you how to use traits and generics to make great abstractions.
+
+no-std and no-alloc is no problem, but you can't do things how you might be used to.
 
 -->
 
@@ -205,7 +196,7 @@ So we're here for Rust, let's learn how to use LEDs plus Rust to make magic.
 let mut control = ControlBuilder::new_3d()
     .with_layout::<CubeLayout>()
     .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
-    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
+    .with_driver(ws2812!(p, CubeLayout::PIXEL_COUNT))
     .build();
 
 loop {
@@ -222,7 +213,9 @@ loop {
 
 <!--
 
-We'll start with the final code.
+This talk will explain how this code works, bit by bit.
+
+While talking to LEDs is low-level, and everything we'll be doing is without allocations and without the standard library, the final API possible with Rust is still high-level.
 
 We make an LED controller:
 
@@ -233,52 +226,19 @@ We make an LED controller:
 
 Then we loop and call `control.tick`, passing in the current time.
 
-This talk will attempt to explain all of this as best as I can.
-
--->
-
-
----
-layout: outline
----
-
-## Talk Outline
-
-1. Driver: How to make an LED be a color
-    1. Color: How our eyes perceive light
-2. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
-4. Control: How to put these together
-5. Quickstart: How to start an LED project now
-
-<!--
-
-So here's the structure of the talk.
-
-We'll start with LEDs, how to tell LEDs what to do, how our eyes perceive what they do.
-
-Then we'll go into spatial layouts and animating these spaces.
-
-Finally we'll put the building blocks together and show how to start an LED project now.
-
 -->
 
 ---
-layout: outline
+layout: big-center
 ---
 
-## Talk Outline
+## LEDs & Colors
 
-1. **Driver: How to make an LED be a color**
-    1. Color: How our eyes perceive light
-2. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
-4. Control: How to put these together
-5. Quickstart: How to start an LED project now
+How to emit and perceive light
 
 <!--
 
-So our first section is all about LEDs and how to drive them.
+So our first section is all about LEDs and color perception.
 
 -->
 
@@ -329,6 +289,62 @@ That means we don't actually see colors as we might think, we don't see the whol
 
 ---
 
+### Pulse-width modulation
+
+An LED can only be **ON** or **OFF**
+
+<img alt="LED PWM (Pulse-Width Modulation)" src="/media/led-pwm.svg" />
+
+<!--
+
+An LED can only be full **ON** or full **OFF**, no such thing as being half-on.
+
+- If you tell an LED to be 100% bright, it will be on for 100% of the time (a 100% duty cycle).
+- If you tell an LED to be 50% bright, it will be on for 50% of the time (a 50% duty cycle).
+
+And so on. Our eyes don’t notice the flicker on and off.
+
+-->
+
+---
+
+### Emitted photons ≠ Perceived brightness
+
+<div class="mt-2 flex flex-row justify-center align-center">
+  <img alt="Uncorrected brightness" src="/media/brightness-uncorrected.svg" class="w-1/2" />
+  <img alt="Corrected brightness" src="/media/brightness-corrected.svg" class="w-1/2" />
+</div>
+
+<!--
+
+What we perceive to a linear change in photons is not linear.
+
+For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
+
+On the left we have uncorrected photons: a linear duty cycle has a non-linear perceived brightness.
+
+On the right we have gamma corrected photons: a gamma-corrected duty cycle has a linear perceived brightness.
+
+The RGB we're used to is gamma-corrected, so double the red means double the perceived brightness of red.
+
+However, when talking to LEDs, we need to use the linear colors.
+
+-->
+
+---
+
+### Color systems
+
+- sRGB: What we think as "RGB"
+- Linear RGB: What use for LEDs
+- HSV: An easy color system
+- OkHsv: A correct color system
+- ... So many more
+
+A `FromColor` trait converts between all the colors.
+
+---
+
 ### What are addressable LEDs?
 
 - You talk to the first LED, it talks to the next LED.
@@ -349,48 +365,6 @@ This is a common form of LEDs where they are sequenced, for example in a strip.
 - You talk to the first LED, it will talk to the next LED.
 - Like filling a bucket, that overflows to the next bucket.
 - On every frame, you must provide a color to every LED.
-
--->
-
----
-
-### Basic LED `Driver` trait
-
-```rust
-pub struct Rgb {
-    red: f32,
-    green: f32,
-    blue: f32,
-}
-
-pub trait Driver {
-    type Error;
-
-    fn write<I>(&mut self, pixels: I) -> Result<(), Self::Error>
-    where
-        I: IntoIterator<Item = Rgb>;
-}
-```
-
-<style>
-    code {
-        @apply text-xl;
-    }
-</style>
-
-<!--
-
-Now to represent an LED driver in code.
-
-We make an Rgb struct to represent a color.
-
-We have a `Driver` trait:
-
-- The implementor provides an associated type for `Error`
-- We have a `write` function, which is given an iterator of Rgb colors
-  - See the generic `I`, which must implement `IntoIterator<Item = Rgb>`
-
-We use an iterator to avoid heap allocations and minimize the memory usage.
 
 -->
 
@@ -571,97 +545,8 @@ fn write_color_byte_to_rmt(
 </style>
 
 ---
-layout: big-center
----
 
-### The problem with naive RGB
-
-Colors are more complex than you might think.
-
-
-<!--
-
-So that's all well and good, but turns out colors are more complex than you might think.
-
--->
-
----
-layout: outline
----
-
-## Talk Outline
-
-1. Driver: How to make an LED be a color
-    1. **Color: How our eyes perceive light**
-2. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
-4. Control: How to put these together
-5. Quickstart: How to start an LED project now
-
-<!--
-
-So up next: how do our eyes perceive light, versus what LEDs emit.
-
--->
-
----
-
-### Pulse-width modulation
-
-An LED can only be **ON** or **OFF**
-
-<img alt="LED PWM (Pulse-Width Modulation)" src="/media/led-pwm.svg" />
-
-<!--
-
-An LED can only be full **ON** or full **OFF**, no such thing as being half-on.
-
-- If you tell an LED to be 100% bright, it will be on for 100% of the time (a 100% duty cycle).
-- If you tell an LED to be 50% bright, it will be on for 50% of the time (a 50% duty cycle).
-
-And so on. Our eyes don’t notice the flicker on and off.
-
--->
-
----
-
-### Emitted photons ≠ Perceived brightness
-
-<div class="mt-2 flex flex-row justify-center align-center">
-  <img alt="Uncorrected brightness" src="/media/brightness-uncorrected.svg" class="w-1/2" />
-  <img alt="Corrected brightness" src="/media/brightness-corrected.svg" class="w-1/2" />
-</div>
-
-<!--
-
-What we perceive to a linear change in photons is not linear.
-
-For our evolutionary survival, we are much more sensitive to changes in dim light than we are to changes in bright light. If you double the amount of photons, we don’t see double the brightness.
-
-On the left we have uncorrected photons: a linear duty cycle has a non-linear perceived brightness.
-
-On the right we have gamma corrected photons: a gamma-corrected duty cycle has a linear perceived brightness.
-
-The RGB we're used to is gamma-corrected, so double the red means double the perceived brightness of red.
-
-However, when talking to LEDs, we need to use the linear colors.
-
--->
-
----
-
-### Color systems
-
-- sRGB: What we think as "RGB"
-- Linear RGB: What use for LEDs
-- HSV: An easy color system
-- OkHsv: A correct color system
-
-A `FromColor` trait converts between all the colors.
-
----
-
-### A better LED `Driver` trait
+### LED `Driver` trait
 
 ```rust
 pub trait Driver {
@@ -681,35 +566,29 @@ pub trait Driver {
 
 <style>
     code {
-        @apply text-lg;
+        @apply text-2xl;
     }
 </style>
 
 <!--
 
-Now let's improve how our `Driver` handles colors, with respect to human perception.
+Now we're ready for our LED `Driver` trait.
 
-Changes:
+Important to notice:
 
-- `Color` associated type
-- `FromColor` trait
-- brightness: f32
+- Pixels can't just be a Vec, we can't use allocations.
+  - Pixels must be an iterator
+- The driver expects a color type, and the writer provides a color type, we automatically convert with the `FromColor` trait.
 
-Most drivers expect Linear RGB as their color.
 -->
 
 ---
-layout: outline
+layout: big-center
 ---
 
-## Talk Outline
+## LED Layout
 
-1. Driver: How to make an LED be a color
-    1. Color: How our eyes perceive light
-2. **Layout: Where are the LEDs in space**
-3. Pattern: How to animate the space with color
-4. Control: How to put these together
-5. Quickstart: How to start an LED project now
+Where are the LEDs in space
 
 <!--
 
@@ -824,6 +703,12 @@ Map 3D space `-1.0` → `1.0`
 - **Y:** `-1.0` (bottom) → `1.0` (top)
 - **Z:** `-1.0` (back) → `1.0` (front)
 
+<style>
+    code {
+        @apply text-lg leading-none;
+    }
+</style>
+
 <!--
 
 We're going to map our 3D space from -1 to +1.
@@ -836,7 +721,7 @@ Why -1.0 → 1.0? So 0.0 is the middle.
 
 <div class="text-center">
 
-### LED Grids
+### Example 2D LED Grid
 
 </div>
 
@@ -854,11 +739,41 @@ Notice the zig zag, that's how the LED grids are made, we need our code to under
 
 ---
 
-
-### `Shape3d`
+### `Layout3d` trait
 
 ```rust
-pub enum Shape3d {
+trait Layout3d {
+    const PIXEL_COUNT: usize;
+
+    fn shapes() -> impl Iterator<Item = Shape3d>;
+
+    fn points() -> impl Iterator<Item = Vec3> {
+        Self::shapes().flat_map(|s| s.points())
+    }
+}
+```
+
+<style>
+    code {
+        @apply text-2xl;
+    }
+</style>
+
+<!--
+
+Important to notice:
+
+- We specify the shapes function
+- We automatically get the points function, which combines the points of every shape.
+
+-->
+
+---
+
+### `Shape3d` enum
+
+```rust
+enum Shape3d {
     Point(Vec3),
     Line {
         // ...
@@ -962,33 +877,18 @@ impl Iterator for Shape3dPointsIterator {
 </style>
 
 ---
-layout: outline
----
-
-## Talk Outline
-
-1. Driver: How to make an LED be a color
-    1. Color: How our eyes perceive light
-2. Layout: Where are the LEDs in space
-3. **Pattern: How to animate the space with color**
-4. Control: How to put these together
-5. Quickstart: How to start an LED project now
-
-<!--
-
-Now we want to make our LEDs flash and dance.
-
--->
-
----
 layout: big-center
 ---
 
-### Animation patterns
+## Animation Pattern
+
+How to animate the space with color
 
 fn tick(time) -> A color for every LED
 
 <!--
+
+Now we want to make our LEDs flash and dance.
 
 Conceptually, an animation pattern is a function that:
 
@@ -1000,7 +900,7 @@ Conceptually, an animation pattern is a function that:
 
 ---
 
-### `Pattern` trait
+### Animation `Pattern` trait
 
 ```rust
 pub trait Pattern<Dim, Layout>
@@ -1026,13 +926,10 @@ where
 
 We'll do this as a trait.
 
-Our trait has two generics, a dimension and a layout. More on that later.
+Most important to notice:
 
-The implementor will provide us with two associated types: Params and Color.
-
-We'll have a constructor which is given the params and returns Self.
-
-And a tick function that is given the current time and returns an iterator of colors.
+- We see our tick function: given the current time, return an iterator of colors
+- Also notice the generics: Dim and Layout
 
 -->
 
@@ -1040,13 +937,7 @@ And a tick function that is given the current time and returns an iterator of co
 
 ### `Dim` and `LayoutForDim`?
 
-```rust
-impl<Layout: Layout1d> Pattern<Dim1d, Layout> for MyPattern {
-    // ...
-}
-```
-
-Because you can't:
+We can't:
 
 ```rust
 impl<Layout: Layout1d> Pattern<Layout> for MyPattern {
@@ -1057,6 +948,15 @@ impl<Layout: Layout2d> Pattern<Layout> for MyPattern {
     // ...
 }
 ```
+
+So we must:
+
+```rust
+impl<Layout: Layout1d> Pattern<Dim1d, Layout> for MyPattern {
+    // ...
+}
+```
+
 
 <style>
     code {
@@ -1140,17 +1040,12 @@ The pattern uses the LED x,y,z position and time as inputs to a 4D noise functio
 -->
 
 ---
-layout: outline
+layout: big-center
 ---
 
-## Talk Outline
+## Control
 
-1. Driver: How to make an LED be a color
-    1. Color: How our eyes perceive light
-2. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
-4. **Control**: How to put these together
-5. Quickstart: How to start an LED project now
+How to put this all together
 
 <!--
 
@@ -1235,9 +1130,17 @@ pub struct ControlBuilder<Dim, Layout, Pattern, Driver> {
     }
 </style>
 
+<!--
+
+We will think of each of these generics as a slot.
+
+Each step in the builder pattern will fill a slot.
+
+-->
+
 ---
 
-### First step: Impl for unit type
+### First slot
 
 ```rust
 impl ControlBuilder<(), (), (), ()> {
@@ -1266,7 +1169,7 @@ By the way, shout-out to Hanno Braun who's working on Fornjot, a CAD kernel in R
 
 ---
 
-### Next: impl for generics
+### Next slot
 
 ```rust
 impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
@@ -1322,7 +1225,7 @@ where
 let mut control = ControlBuilder::new_3d()
     .with_layout::<CubeLayout>()
     .with_pattern::<Noise3d<noise_fns::Perlin>>(NoiseParams::default())
-    .with_driver(ws2812!(p, Layout::PIXEL_COUNT))
+    .with_driver(ws2812!(p, CubeLayout::PIXEL_COUNT))
     .build();
 
 loop {
@@ -1348,14 +1251,9 @@ This is the code we saw at the beginning, now maybe things make slightly more se
 layout: outline
 ---
 
-## Talk Outline
+## Quickstart
 
-1. Driver: How to make an LED be a color
-    1. Color: How our eyes perceive light
-2. Layout: Where are the LEDs in space
-3. Pattern: How to animate the space with color
-4. Control: How to put these together
-5. **Quickstart**: How to start an LED project now
+How to start an LED project now
 
 ---
 
@@ -1389,7 +1287,7 @@ Blinksy also has a way to simulate on your desktop.
 
 ---
 
-### Quickstart project
+### Template project
 
 <https://blinksy.dev/quickstart>
 
@@ -1397,7 +1295,7 @@ TODO https://github.com/ahdinosaur/blinksy-quickstart-gledopto>
 
 <!--
 
-If you wanna start now, I made a quickstart project.
+If you wanna start now, I made a template project.
 
 - Setup so you write code to run on both desktop and micro-controller.
 - Uses Gledopto micro-controller, an affordable device on AliExpress

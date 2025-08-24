@@ -6,22 +6,22 @@ https://rustforgeconf.com/talks
 
 ## 3 Sentence Description
 
-LEDs + Rust = 💜. Join me in how I made an LED cube with embedded Rust. What would you make with LEDs and Rust?
+Rust + LEDs = 💜. Rust empowers us to think at a high-level for low-level systems. Join me in how I made an LED cube with embedded Rust (no-std & no-alloc), and how you could too.
 
 ## Description
 
-LEDs + Rust = 💜
+Rust + LEDs = 💜
 
-Join me in how I made an LED cube with embedded (no-std & no-alloc) Rust.
+Rust empowers us to think at a high-level for low-level systems.
 
-Rust empowers us to think at a high-level for low-level systems:
+Join me in how I made an LED cube with embedded Rust (no-std & no-alloc):
 
 - Define LED layouts as geometric shapes like lines, grids, etc
 - Write patterns like graphics shaders: compute colors for each LED based on position and other data
 - Drive any any LED chipset, use traits as powerful abstractions
 - All without any standard library or heap allocations
 
-What do you want to make with LEDs and Rust?
+What would you make with LEDs and Rust?
 
 <https://blinksy.dev>
 

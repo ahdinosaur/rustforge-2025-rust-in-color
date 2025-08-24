@@ -121,7 +121,7 @@
     <text x="-15" y="0" class="axis-marker-text" text-anchor="end">1.00</text>
 
     <!-- Curve texts -->
-    <text x="110" y="325" class="curve-text" transform="rotate(-45, 110, 325)">Perceived Brightness, Corrected</text>
-    <text x="201" y="403" class="curve-text" transform="rotate(-45, 201, 403)">Gamma-Corrected Duty Cycle</text>
+    <text x="110" y="325" class="curve-text" transform="rotate(-45, 110, 325)">Perceived Brightness</text>
+    <text x="201" y="403" class="curve-text" transform="rotate(-45, 201, 403)">Emitted Photons</text>
   </g>
 </svg>
