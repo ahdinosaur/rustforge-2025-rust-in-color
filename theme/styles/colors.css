@@ -64,3 +64,8 @@ html.dark {
   --slidev-code-tab-text-color: var(--ctp-subtext0);
   --slidev-code-tab-active-text-color: var(--ctp-text);
 }
+
+/* Override Shiki + Catppuccin colors */
+.shiki span[style*="--shiki-light: #DF8E1D"] {
+  --shiki-light: var(--ctp-flamingo) !important; /* pick a higher-contrast color */
+}

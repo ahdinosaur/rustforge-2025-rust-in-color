@@ -151,6 +151,7 @@
 
 .slidev-layout.big-center {
   @apply text-center;
+
   h1,h2,h3 {
     @apply text-6xl font-700;
   }

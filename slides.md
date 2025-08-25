@@ -97,7 +97,7 @@ layout: intro-image-right
 I'm Mikey
 
 - Previously a Node.js developer,
-- A based here in Wellington,
+- Am based here in Wellington,
 - And I like making cool art amongst friends.
 
 -->
@@ -114,7 +114,7 @@ layout: center
 
 <!--
 
-So I made this LED cube, and I'm going to show you how.
+So I made this LED cube with Rust, and I'm going to show you how.
 
 -->
 
@@ -182,9 +182,13 @@ Rust is amazing.
 
 With the power of abstraction, we can think at a very high-level, for very low-level applications.
 
-I will show you how to use traits and generics to make great abstractions.
+I will show you examples of how to use traits and generics to make great abstractions.
 
-no-std and no-alloc is no problem, but you can't do things how you might be used to.
+no-std and no-alloc will be no problem, but you can't fall back on doing things how you might be used to.
+
+no-std means you can't use the usual standard library.
+
+no-alloc means you can't use Box or Vec or Map or anything that requires a heap allocation.
 
 -->
 
@@ -610,9 +614,11 @@ Most LED projects, that I'm aware of, think in terms arrays of pixels.
 
 This makes sense because images and videos are also arrays of pixels.
 
+But I also feel this is limiting.
+
 I want to think like graphics shaders.
 
-What if every pixel had a position in space, which we'd use on every frame to calculate the color?
+What if every pixel had a position in space, then on every frame we use the position and time to calculate the color.
 
 -->
 
@@ -694,28 +700,66 @@ Source: https://youtu.be/_ZtewjbFXoA
 -->
 
 ---
+layout: center
+---
 
-### Layout in 3D
+### 1D Space
 
-Map 3D space `-1.0` → `1.0`
+- **X:** `-1.0` (left) → `1.0` (right)
+
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/blinksy-1d-rainbow.mp4" type="video/webm">
+</video>
+
+<!--
+
+We're going to map all our LEDs into a space from -1 to +1.
+
+Here's what that looks like in 1D space.
+
+-->
+
+---
+layout: center
+---
+
+### 2D Space
+
+- **X:** `-1.0` (left) → `1.0` (right)
+- **Y:** `-1.0` (bottom) → `1.0` (top)
+
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/blinksy-2d-rainbow.mp4" type="video/webm">
+</video>
+
+<!--
+
+Here's what that looks like in 2D space.
+
+-->
+
+---
+layout: center
+---
+
+### 3D Space
 
 - **X:** `-1.0` (left) → `1.0` (right)
 - **Y:** `-1.0` (bottom) → `1.0` (top)
 - **Z:** `-1.0` (back) → `1.0` (front)
 
-<style>
-    code {
-        @apply text-lg leading-none;
-    }
-</style>
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/blinksy-3d-rainbow.mp4" type="video/webm">
+</video>
 
 <!--
 
-We're going to map our 3D space from -1 to +1.
+Here's what that looks like in 3D space.
 
 Why -1.0 → 1.0? So 0.0 is the middle.
 
 -->
+
 
 ---
 
@@ -1272,6 +1316,8 @@ I want to help people make art with LEDs.
 -->
 
 ---
+layout: center
+---
 
 ### Desktop simulation
 
@@ -1286,12 +1332,16 @@ Blinksy also has a way to simulate on your desktop.
 -->
 
 ---
+layout: center
+---
 
-### Template project
+### Template project: 1d rope
 
-<https://blinksy.dev/quickstart>
+[github.com/ahdinosaur/blinksy-quickstart-1d-rope](https://github.com/ahdinosaur/blinksy-quickstart-1d-rope)
 
-TODO https://github.com/ahdinosaur/blinksy-quickstart-gledopto>
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/blinksy-quickstart-1d-rope.mp4" type="video/webm">
+</video>
 
 <!--
 
@@ -1306,11 +1356,30 @@ If you wanna start now, I made a template project.
 layout: center
 ---
 
+### Template project: 3d grid
+
+[github.com/ahdinosaur/blinksy-quickstart-3d-grid](https://github.com/ahdinosaur/blinksy-quickstart-3d-grid)
+
+<video controls autoplay loop muted class="h-0 flex-1">
+  <source src="/media/blinksy-quickstart-3d-grid.mp4" type="video/webm">
+</video>
+
+
+<!--
+
+Or maybe you want to animate a 3d grid!?
+
+-->
+
+---
+layout: big-center
+---
+
 ## Thanks!
 
-Blinksy: <https://blinksy.dev>
+Blinksy: [blinksy.dev](https://blinksy.dev)
 
-Me: <https://mikey.nz>
+Me: [mikey.nz](https://mikey.nz)
 
 <!--
 
