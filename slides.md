@@ -342,10 +342,16 @@ However, when talking to LEDs, we need to use the linear colors.
 - sRGB: What we think as "RGB"
 - Linear RGB: What use for LEDs
 - HSV: An easy color system
-- OkHsv: A correct color system
+- Okhsv: A correct color system
 - ... So many more
 
 A `FromColor` trait converts between all the colors.
+
+<!--
+
+Okhsv is part of Oklab.
+
+-->
 
 ---
 
