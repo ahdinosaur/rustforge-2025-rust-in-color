@@ -84,7 +84,6 @@ layout: intro-image-right
 - Node.js + Rust developer
 - Based in Pōneke (Wellington), Aotearoa (New Zealand)
 - Care about creative tech and community
-- Aspiring solarpunk
 
 ::image::
 
@@ -446,7 +445,7 @@ Then to send many bits, you just repeat the process.
 ### Trait to describe a "Clockless" LED
 
 ```rust
-pub trait ClocklessLed {
+trait ClocklessLed {
     const T_0H: Nanoseconds;
     const T_0L: Nanoseconds;
     const T_1H: Nanoseconds;
@@ -559,7 +558,7 @@ fn write_color_byte_to_rmt(
 ### LED `Driver` trait
 
 ```rust
-pub trait Driver {
+trait Driver {
     type Error;
     type Color;
 
@@ -863,7 +862,7 @@ And so on...
 ```rust
 impl Shape3d {
     /// Returns an iterator over all points (LED positions) in this shape.
-    pub fn points(&self) -> Shape3dPointsIterator {
+    fn points(&self) -> Shape3dPointsIterator {
         match *self {
             // Shape3d::Point => ...
             // Shape3d::Line => ...
@@ -900,7 +899,7 @@ So I realized you could return an enum that `impl Iterator`, which wraps sub-ite
 
 ```rust
 /// Iterator over points in a 3D shape.
-pub enum Shape3dPointsIterator {
+enum Shape3dPointsIterator {
     /// Iterator for a single point
     Point(Once<Vec3>),
     /// Iterator for points along a line
@@ -956,7 +955,7 @@ Conceptually, an animation pattern is a function that:
 ### Animation `Pattern` trait
 
 ```rust
-pub trait Pattern<Dim, Layout>
+trait Pattern<Dim, Layout>
 where
   Layout: LayoutForDim<Dim>,
 {
@@ -1169,7 +1168,7 @@ We use some clever Rust to combine what we need: types and values.
 ### Start with a generic `ControlBuilder`
 
 ```rust
-pub struct ControlBuilder<Dim, Layout, Pattern, Driver> {
+struct ControlBuilder<Dim, Layout, Pattern, Driver> {
     dim: PhantomData<Dim>,
     layout: PhantomData<Layout>,
     pattern: Pattern,
@@ -1197,7 +1196,7 @@ Each step in the builder pattern will fill a slot.
 
 ```rust
 impl ControlBuilder<(), (), (), ()> {
-    pub fn new_3d() -> ControlBuilder<Dim3d, (), (), ()> {
+    fn new_3d() -> ControlBuilder<Dim3d, (), (), ()> {
         ControlBuilder {
             dim: PhantomData,
             layout: PhantomData,
@@ -1226,10 +1225,10 @@ By the way, shout-out to Hanno Braun who's working on Fornjot, a CAD kernel in R
 
 ```rust
 impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
-    pub fn with_driver<Driver>(self, driver: Driver) -> ControlBuilder<Dim, Layout, Pattern, Driver>
-    where
-        Driver: DriverTrait,
-    {
+    fn with_driver<Driver: DriverTrait>(
+        self,
+        driver: Driver
+    ) -> ControlBuilder<Dim, Layout, Pattern, Driver> {
         ControlBuilder {
             dim: self.dim,
             layout: self.layout,
@@ -1242,7 +1241,7 @@ impl<Dim, Layout, Pattern> ControlBuilder<Dim, Layout, Pattern, ()> {
 
 <style>
     code {
-        @apply text-md;
+        @apply text-lg;
     }
 </style>
 
@@ -1258,7 +1257,7 @@ where
     Driver: DriverTrait,
     Driver::Color: FromColor<Pattern::Color>,
 {
-    pub fn build(self) -> Control<Dim, Layout, Pattern, Driver> {
+    fn build(self) -> Control<Dim, Layout, Pattern, Driver> {
         Control::new(self.pattern, self.driver)
     }
 }
